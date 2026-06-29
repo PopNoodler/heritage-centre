@@ -56,7 +56,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
   background:radial-gradient(135% 135% at 50% 42%, #34788a, var(--sea2));cursor:grab;}
 #viewport.dragging{cursor:grabbing;}
 #world{position:absolute;top:0;left:0;width:1600px;height:1000px;transform-origin:0 0;will-change:transform;}
-#world svg{position:absolute;inset:0;width:1600px;height:1000px;}
+#world>svg{position:absolute;inset:0;width:1600px;height:1000px;}
 
 /* ---------- POI markers: carved-stone medallions ---------- */
 .poi{position:absolute;transform:translate(-50%,-100%);z-index:6;
@@ -67,6 +67,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
   box-shadow:0 0 0 3px var(--parch), 0 0 0 5px var(--bronze-dk), 0 6px 12px var(--shadow);
   display:flex;align-items:center;justify-content:center;}
 .poi .pin span{font-size:27px;line-height:1;}
+.poi .pin .ic{width:34px;height:34px;display:block;}
 .poi .pin::after{content:"";position:absolute;bottom:-12px;left:50%;
   width:14px;height:14px;background:var(--bronze);transform:translateX(-50%) rotate(45deg);
   box-shadow:0 0 0 3px var(--parch);border-radius:0 0 3px 0;}
@@ -535,13 +536,38 @@ viewport.addEventListener("pointerup", e=>{
   lastTap = now;
 });
 
+/* ---- bronze "engraved" icon set (matches the antique chart theme) ---- */
+function glyph(name){
+  const D="#6e4a16", C="#f4ead0";
+  const ic = {
+    castle:`<rect x="8" y="13" width="16" height="15"/><rect x="8" y="9" width="3.6" height="5"/><rect x="14.2" y="9" width="3.6" height="5"/><rect x="20.4" y="9" width="3.6" height="5"/><path d="M13.5 28v-6a2.5 2.5 0 0 1 5 0v6Z" fill="${C}"/><rect x="10.5" y="16" width="3" height="3" fill="${C}"/><rect x="18.5" y="16" width="3" height="3" fill="${C}"/>`,
+    anchor:`<g fill="none" stroke="${D}" stroke-width="2.4" stroke-linecap="round"><circle cx="16" cy="7" r="2.6"/><path d="M16 10v15"/><path d="M11 13h10"/><path d="M6 18a10 10 0 0 0 20 0"/><path d="M6 18l-2.4-1M6 18l2.6 1.6"/><path d="M26 18l2.4-1M26 18l-2.6 1.6"/></g>`,
+    museum:`<path d="M5 13 16 6 27 13Z"/><rect x="6" y="13.5" width="20" height="2.4"/><rect x="8" y="16.5" width="2.6" height="8"/><rect x="14.7" y="16.5" width="2.6" height="8"/><rect x="21.4" y="16.5" width="2.6" height="8"/><rect x="5" y="24.5" width="22" height="2.6"/>`,
+    mountain:`<path d="M3 27 12 10 17 19 21 13 29 27Z"/><path d="M9.4 20 12 10 15 16 13 16.6 11 19Z" fill="${C}"/>`,
+    plane:`<path d="M16 3c1.6 0 2.2 2.6 2.2 5.6l9.8 6v2.4l-9.8-2.6v4.4l3 2.2v2l-5.2-1.4-5.2 1.4v-2l3-2.2v-4.4L4 17v-2.4l9.8-6C13.8 5.6 14.4 3 16 3Z"/>`,
+    church:`<rect x="11" y="15" width="10" height="13"/><path d="M11 15 16 9 21 15Z"/><rect x="15" y="3" width="2" height="6"/><rect x="13.4" y="4.8" width="5.2" height="2"/><path d="M14.4 28v-5.5a1.6 1.6 0 0 1 3.2 0V28Z" fill="${C}"/>`,
+    boat:`<path d="M4 18h24l-3.2 7H7.2Z"/><rect x="9.5" y="11.5" width="13" height="6.5"/><rect x="11.6" y="13.4" width="2.6" height="2.6" fill="${C}"/><rect x="17.8" y="13.4" width="2.6" height="2.6" fill="${C}"/>`,
+    fish:`<path d="M5 16C9 10 19 10 23 16 19 22 9 22 5 16Z"/><path d="M23 16 29 11.5 27 16 29 20.5Z"/><circle cx="10.5" cy="14.8" r="1.3" fill="${C}"/>`,
+    stones:`<path d="M9 27 8 14a3 3 0 0 1 6 0L13 27Z"/><path d="M22 27 21 12a3.2 3.2 0 0 1 6.4 0L25 27Z"/><path d="M10.5 13.2h14v3.4h-14Z"/>`,
+    shell:`<path d="M16 7C8.5 7 4.5 15 5.5 23h21C27.5 15 23.5 7 16 7Z"/><g stroke="${C}" stroke-width="1.4" fill="none"><path d="M16 9v13"/><path d="M11.6 9.6 10 22"/><path d="M20.4 9.6 22 22"/></g>`,
+    island:`<path d="M3 25c4-7 9-7 13-3 4-4 9-4 13 3Z"/><path d="M16 22V9" stroke="${D}" stroke-width="1.8"/><path d="M16 9h7v4.5h-7Z"/>`
+  };
+  return `<svg class="ic" width="34" height="34" viewBox="0 0 32 32" fill="${D}" aria-hidden="true">${ic[name]||ic.island}</svg>`;
+}
+const ICON_FOR = {
+  "Kisimul Castle":"castle", "Castlebay":"anchor", "Dualchas — Barra Heritage Centre":"museum",
+  "Heaval":"mountain", "Barra Airport — Tràigh Mhòr":"plane", "Cille Bharra":"church",
+  "Ardmhor Ferry":"boat", "Northbay":"fish", "Dùn Bharpa":"stones",
+  "Halaman Bay & West Beaches":"shell", "Isle of Vatersay":"island"
+};
+
 /* ---- build POI markers ---- */
 POIS.forEach((p, i)=>{
   const b = document.createElement("button");
   b.className = "poi bounce" + (p.here ? " here" : "");
   b.style.left = p.x+"px"; b.style.top = p.y+"px";
   b.style.animationDelay = (i*0.2)+"s";
-  b.innerHTML = `<span class="pin"><span>${p.icon}</span></span><span class="lbl">${p.title}</span>`;
+  b.innerHTML = `<span class="pin">${glyph(ICON_FOR[p.title])}</span><span class="lbl">${p.title}</span>`;
   b.addEventListener("click", ev=>{ if(moved) return; openPanel(p); });
   world.appendChild(b);
 });

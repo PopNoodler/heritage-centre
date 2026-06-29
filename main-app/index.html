@@ -287,13 +287,31 @@ body.screen-home #frame{display:block;}
     </div>
     <div class="card-row">
       <button class="menu-card pulse" data-go="game">
-        <span class="emoji">🎣</span>
+        <span class="emoji"><svg width="132" height="80" viewBox="0 0 132 80" aria-hidden="true">
+          <path d="M16 64 Q44 74 66 64 Q88 74 116 64" fill="none" stroke="#a9762a" stroke-width="3" opacity="0.45"/>
+          <path d="M92 34 L128 14 L117 34 L128 54 Z" fill="#bcc8cf"/>
+          <ellipse cx="56" cy="34" rx="44" ry="21" fill="#dde6ea"/>
+          <path d="M16 29 Q56 9 96 31 Q56 20 16 29 Z" fill="#5f7e8c"/>
+          <path d="M19 39 Q56 58 93 39 Q56 48 19 39 Z" fill="#f6fafb" opacity="0.9"/>
+          <path d="M48 14 Q59 4 70 17 Z" fill="#5f7e8c"/>
+          <path d="M22 34 Q56 31 90 34" stroke="#a9bcc3" stroke-width="1.8" fill="none" opacity="0.7"/>
+          <circle cx="30" cy="31" r="6" fill="#fff"/><circle cx="29" cy="31" r="3" fill="#15222a"/>
+        </svg></span>
         <h2>Herring Game</h2>
         <span class="gd">Geama an Sgadain</span>
         <p>Catch the silver herring and fill your creel!</p>
       </button>
       <button class="menu-card pulse" data-go="gallery">
-        <span class="emoji">🖼️</span>
+        <span class="emoji"><svg width="110" height="84" viewBox="0 0 108 84" aria-hidden="true">
+          <rect x="4" y="4" width="100" height="76" rx="5" fill="#a9762a"/>
+          <rect x="9" y="9" width="90" height="66" rx="3" fill="#7c531a"/>
+          <rect x="14" y="14" width="80" height="56" fill="#cfe0e6"/>
+          <circle cx="78" cy="30" r="8" fill="#e0bd6f"/>
+          <path d="M14 70 V50 Q34 40 54 49 Q74 58 94 47 V70 Z" fill="#6f8f55"/>
+          <path d="M14 70 V60 Q40 53 66 60 Q82 64 94 60 V70 Z" fill="#4f6b3f"/>
+          <circle cx="13" cy="13" r="3.2" fill="#f0e6cd"/><circle cx="95" cy="13" r="3.2" fill="#f0e6cd"/>
+          <circle cx="13" cy="71" r="3.2" fill="#f0e6cd"/><circle cx="95" cy="71" r="3.2" fill="#f0e6cd"/>
+        </svg></span>
         <h2>Exhibit Gallery</h2>
         <span class="gd">Gailearaidh</span>
         <p>Explore pictures from our collection</p>
@@ -309,7 +327,7 @@ body.screen-home #frame{display:block;}
 <!-- =================== FISHING GAME =================== -->
 <section id="game" class="screen">
   <div class="topbar">
-    <button class="home-btn" data-go="home">🏠 Home</button>
+    <button class="home-btn" data-go="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="#7c531a" aria-hidden="true"><path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/></svg> Home</button>
     <span class="title">Catch the Herring!</span>
     <button class="icon-btn" id="soundBtn" aria-label="Sound on/off">🔊</button>
   </div>
@@ -481,7 +499,7 @@ body.screen-home #frame{display:block;}
 <!-- =================== GALLERY =================== -->
 <section id="gallery" class="screen">
   <div class="topbar">
-    <button class="home-btn" data-go="home">🏠 Home</button>
+    <button class="home-btn" data-go="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="#7c531a" aria-hidden="true"><path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/></svg> Home</button>
     <span class="title">Exhibit Gallery</span>
     <span style="width:54px"></span>
   </div>
@@ -556,23 +574,18 @@ body.screen-home #frame{display:block;}
    ============================================================ */
 
 function exhibitPlate(opts){
-  const { sky="#bfe9fb", sea="#1c7fb0", sand="#e9d8b4", motif="⚓", accent="#0b3d5c" } = opts;
+  const { motif="⚓", id=0 } = opts;
   return `
   <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${(opts.title||'Exhibit').replace(/"/g,'')}">
-    <defs>
-      <linearGradient id="g${opts.id}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="${sky}"/>
-        <stop offset="0.55" stop-color="${sky}"/>
-        <stop offset="0.56" stop-color="${sea}"/>
-        <stop offset="1" stop-color="${accent}"/>
-      </linearGradient>
-    </defs>
-    <rect width="400" height="260" fill="url(#g${opts.id})"/>
-    <circle cx="330" cy="50" r="26" fill="#ffce4a" opacity="0.9"/>
-    <path d="M0 150 Q100 130 200 150 T400 150 L400 168 Q300 150 200 168 T0 168 Z" fill="#ffffff" opacity="0.25"/>
-    <rect x="0" y="210" width="400" height="50" fill="${sand}"/>
-    <text x="200" y="135" font-size="92" text-anchor="middle" dominant-baseline="middle">${motif}</text>
-    <rect x="6" y="6" width="388" height="248" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.5" rx="10"/>
+    <defs><linearGradient id="pg${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3ead2"/><stop offset="1" stop-color="#dcc79a"/></linearGradient></defs>
+    <rect width="400" height="260" fill="url(#pg${id})"/>
+    <circle cx="200" cy="120" r="76" fill="none" stroke="#a9762a" stroke-width="2" opacity="0.45"/>
+    <g fill="none" stroke="#a9762a" stroke-width="2.4" opacity="0.7">
+      <circle cx="30" cy="30" r="8"/><circle cx="370" cy="30" r="8"/><circle cx="30" cy="230" r="8"/><circle cx="370" cy="230" r="8"/></g>
+    <rect x="10" y="10" width="380" height="240" fill="none" stroke="#a9762a" stroke-width="3" rx="6"/>
+    <rect x="17" y="17" width="366" height="226" fill="none" stroke="#a9762a" stroke-width="1" rx="4"/>
+    <text x="200" y="138" font-size="104" text-anchor="middle" dominant-baseline="middle">${motif}</text>
   </svg>`;
 }
 
@@ -658,10 +671,13 @@ window.exhibitPlate = exhibitPlate;
     catch(){ this.blip(660,0.12,"triangle"); setTimeout(()=>this.blip(880,0.12,"triangle"),70); },
     win(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.blip(f,0.18,"sine"),i*120)); }
   };
+  const SPK_ON = `<svg width="26" height="26" viewBox="0 0 24 24" fill="#7c531a" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="#7c531a" stroke-width="2"/><path d="M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="#7c531a" stroke-width="2"/></svg>`;
+  const SPK_OFF = `<svg width="26" height="26" viewBox="0 0 24 24" fill="#7c531a" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9l6 6M22 9l-6 6" stroke="#7c531a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
   const soundBtn = document.getElementById("soundBtn");
+  soundBtn.innerHTML = SPK_ON;
   bindTap(soundBtn, ()=>{
     Sound.on = !Sound.on;
-    soundBtn.textContent = Sound.on ? "🔊" : "🔈";
+    soundBtn.innerHTML = Sound.on ? SPK_ON : SPK_OFF;
     if(Sound.on) Sound.blip(700,0.1);
   });
 
