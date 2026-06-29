@@ -86,9 +86,15 @@ button{font-family:inherit;cursor:pointer;border:none;}
   letter-spacing:3px;text-shadow:0 3px 8px rgba(0,0,0,.5);
 }
 .home-sub{
-  color:var(--bronze-lt);text-align:center;margin:6px 0 42px;
+  color:var(--bronze-lt);text-align:center;margin:6px 0 18px;
   font-size:clamp(17px,2.6vw,26px);font-style:italic;letter-spacing:1px;
 }
+.flag-banner{display:flex;align-items:center;gap:14px;margin:0 0 36px;
+  background:linear-gradient(180deg,var(--parch),var(--parch2));border:2px solid var(--bronze);
+  border-radius:12px;padding:8px 20px;box-shadow:0 6px 14px var(--shadow);}
+.barra-flag{width:66px;height:40px;display:block;border:1px solid rgba(43,35,23,.4);
+  border-radius:3px;box-shadow:0 2px 5px rgba(0,0,0,.3);}
+.flag-banner span{font-style:italic;color:var(--ink-soft);font-size:clamp(15px,2vw,19px);}
 .card-row{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;}
 .menu-card{
   position:relative;width:min(40vw,360px);min-width:260px;
@@ -271,6 +277,14 @@ body.screen-home #frame{display:block;}
       <svg class="knot"><use href="#triq"/></svg>
     </div>
     <p class="home-sub">Fàilte · Welcome — tap a station to begin</p>
+    <div class="flag-banner">
+      <svg class="barra-flag" viewBox="0 0 150 90" aria-label="Flag of the Isle of Barra">
+        <rect width="150" height="90" fill="#00843D"/>
+        <rect x="0" y="38.5" width="150" height="13" fill="#fff"/>
+        <rect x="47.5" y="0" width="13" height="90" fill="#fff"/>
+      </svg>
+      <span>Bratach Bharraigh · Flag of the Isle of Barra</span>
+    </div>
     <div class="card-row">
       <button class="menu-card pulse" data-go="game">
         <span class="emoji">🎣</span>
@@ -361,7 +375,10 @@ body.screen-home #frame{display:block;}
         <line x1="-12" y1="-8" x2="-12" y2="-55" stroke="#241c12" stroke-width="2.4"/>
         <line x1="26" y1="-8" x2="26" y2="-45" stroke="#241c12" stroke-width="2.2"/>
         <line x1="-32" y1="-50" x2="8" y2="-46" stroke="#3a2c18" stroke-width="1.6"/>
-        <path d="M-12,-55 l13,3 l-13,3 Z" fill="#b23b32"/>
+        <!-- the Barra flag at the masthead -->
+        <rect x="-12" y="-59" width="17" height="11" fill="#00843D"/>
+        <rect x="-12" y="-55" width="17" height="3" fill="#fff"/>
+        <rect x="-7.5" y="-59" width="3" height="11" fill="#fff"/>
         <path d="M-52,-6 Q-50,9 -34,12 L40,12 Q55,8 57,-8 Q40,0 16,-2 Q-20,-5 -52,-6 Z"
               fill="#2b241c" stroke="#15110c" stroke-width="1.2"/>
         <path d="M-44,4 Q0,10 49,2" stroke="#5a6b6b" stroke-width="1.2" fill="none" opacity="0.5"/>
@@ -653,15 +670,34 @@ window.exhibitPlate = exhibitPlate;
      ============================================================ */
   const FISH_COLORS = ["#5d7480","#2f6b5a","#3f6a8c","#8a6a3a","#2c6470","#6f5a86","#9a4536"];
   const CONFETTI_COLORS = ["#a9762a","#e0bd6f","#3f6b39","#8c2f2a","#2c6470","#eef2f4"];
+  // Facts about Barra (Eilean Bharraigh)
   const FUN_FACTS = [
-    "Did you know? <b>Herring</b> were the “silver darlings” of the Scottish fishing fleet. 🐟",
-    "Did you know? <b>Puffins</b> nest in clifftop burrows around the Hebrides each summer. 🐦",
-    "Did you know? <b>Grey seals</b> haul out on the rocks all around the islands. 🦭",
-    "Did you know? <b>Gannets</b> dive like arrows into the cold Atlantic to catch fish. 🌊",
-    "Did you know? <b>Harris Tweed</b> is hand-woven in island homes from local wool. 🧶",
-    "Tapadh leat! Your catch goes to the <b>pier</b> to be sold at market. ⚖️"
+    "Did you know? At <b>Barra Airport</b> the planes land right on the beach — the only beach runway with scheduled flights in the world! ✈️",
+    "Did you know? Flights to Barra change with the <b>tide</b>, because the sea covers the sandy runway twice a day. 🌊",
+    "Did you know? <b>Kisimul Castle</b> sits on a rock in Castlebay Bay — a castle in the sea, home of Clan MacNeil. 🏰",
+    "Did you know? <b>Castlebay</b> was once a busy herring port, its bay full of “silver darlings” and fishing boats. 🐟",
+    "Did you know? Barra's beaches are made of tiny <b>cockle shells</b> — the great strand is called Tràigh Mhòr, the Big Beach. 🐚",
+    "Did you know? <b>Heaval</b> is Barra's highest hill, with a marble statue of Our Lady of the Sea on its slopes. ⛰️",
+    "Did you know? The island is named after <b>St Barr</b> (Finbarr), remembered at the old church of Cille Bharra. ⛪",
+    "Did you know? <b>Gaelic</b> is still spoken every day on Barra — its island name is Eilean Bharraigh. 🗣️",
+    "Did you know? <b>Grey seals</b> and <b>puffins</b> live all around Barra's shores and cliffs. 🦭",
+    "Tapadh leat! Your catch goes to the <b>pier at Castlebay</b> to be sold, just like the old fishing days. ⚖️"
   ];
   const PRAISE = ["Sgoinneil! (Great!)","Math thu fhèin!","Glè mhath! (Very good!)","Wonderful catch!","Tapadh leat!","Brilliant!"];
+
+  // Draw items in a shuffled cycle so nothing repeats until the whole set is used.
+  function makeCycler(items){
+    let order = [], i = 0;
+    function shuffle(){
+      order = items.map((_,k)=>k);
+      for(let j=order.length-1;j>0;j--){ const r=Math.floor(Math.random()*(j+1)); const t=order[j]; order[j]=order[r]; order[r]=t; }
+      i = 0;
+    }
+    shuffle();
+    return function(){ if(i>=order.length) shuffle(); return items[order[i++]]; };
+  }
+  const nextFact = makeCycler(FUN_FACTS);
+  const nextPraise = makeCycler(PRAISE);
 
   const Game = {
     running:false, raf:null,
@@ -801,14 +837,15 @@ window.exhibitPlate = exhibitPlate;
       this.els.boat.classList.remove("ready");
       confettiBurst();
       this.els.celEmoji.textContent = ["🎉","🐟","⭐","🎣","🛟"][Math.floor(rand()*5)];
-      this.els.celTitle.textContent = PRAISE[Math.floor(rand()*PRAISE.length)];
-      this.els.celText.innerHTML = FUN_FACTS[Math.floor(rand()*FUN_FACTS.length)];
+      this.els.celTitle.textContent = nextPraise();
+      this.els.celText.innerHTML = nextFact();
       this.els.cel.classList.add("show");
     }
   };
 
   function fishSVG(back, dir){
-    const flip = dir<0 ? 'transform="scale(-1,1)" transform-origin="42 27"' : '';
+    // fish is drawn head-left; flip it to face RIGHT when swimming right (dir>0)
+    const flip = dir>0 ? 'transform="scale(-1,1)" transform-origin="42 27"' : '';
     return `<svg viewBox="0 0 84 54"><g ${flip}>
       <path d="M58,27 L82,12 L75,27 L82,42 Z" fill="${back}"/>
       <path d="M30,13 Q41,2 52,15 Z" fill="${back}" opacity="0.9"/>
@@ -825,7 +862,8 @@ window.exhibitPlate = exhibitPlate;
   function flipFish(f, dir){
     f.vx = Math.abs(f.vx)*dir;
     const svg = f.el.querySelector("g");
-    if(svg){ if(dir<0){ svg.setAttribute("transform","scale(-1,1)"); svg.setAttribute("transform-origin","42 27"); } else { svg.removeAttribute("transform"); } }
+    // face right (flip) when moving right (dir>0); face left (default) when moving left
+    if(svg){ if(dir>0){ svg.setAttribute("transform","scale(-1,1)"); svg.setAttribute("transform-origin","42 27"); } else { svg.removeAttribute("transform"); } }
   }
   function confettiBurst(){
     const colors = CONFETTI_COLORS;
