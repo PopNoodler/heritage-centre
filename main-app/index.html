@@ -130,7 +130,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
   background:linear-gradient(180deg, rgba(58,90,94,.28), rgba(16,34,38,.62));}
 
 /* Hebridean wildlife & kelp */
-.seal{position:absolute;top:38.5%;left:57%;width:98px;height:82px;z-index:1;pointer-events:none;
+.seal{position:absolute;top:38.5%;left:75%;width:92px;height:78px;z-index:1;pointer-events:none;
   animation:bob2 5s ease-in-out infinite;}
 @keyframes bob2{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
 .kelp{position:absolute;bottom:14%;z-index:1;pointer-events:none;transform-origin:bottom center;
@@ -406,7 +406,7 @@ body.screen-home #frame{display:block;}
 
     <div class="sea-region"></div>
     <div class="net" id="net">
-      <div class="net-label">🐟 Glac an t-iasg! · Catch the fish!</div>
+      <div class="net-label">Glac an t-iasg! 🐟</div>
     </div>
 
     <!-- a grey seal surfacing -->
@@ -815,8 +815,9 @@ window.exhibitPlate = exhibitPlate;
         this.updateBasket();
         this.els.basket.classList.remove("flash"); void this.els.basket.offsetWidth;
         this.els.basket.classList.add("flash");
-        setTimeout(()=>{ if(this.running && this.fish.length < 6) this.spawnFish(); }, 400);
-        if(this.basketCount >= this.goal) this.els.boat.classList.add("ready");
+        // the net empties as fish are caught — they do NOT respawn until the
+        // whole catch has been taken to the pier
+        if(this.fish.length === 0) this.els.boat.classList.add("ready");
       };
       clone.addEventListener("transitionend", done, {once:true});
       const fallback = setTimeout(done, 650);
@@ -827,7 +828,7 @@ window.exhibitPlate = exhibitPlate;
       if(this.basketCount < this.goal) this.els.boat.classList.remove("ready");
     },
     toPier(){
-      if(this.basketCount < this.goal) return;
+      if(this.basketCount === 0 || this.fish.length > 0) return; // only when the whole net is harvested
       resetIdle();
       Sound.win();
       this.total += this.basketCount;
@@ -835,6 +836,8 @@ window.exhibitPlate = exhibitPlate;
       this.basketCount = 0;
       this.updateBasket();
       this.els.boat.classList.remove("ready");
+      // refill the net with a fresh shoal for the next catch
+      for(let i=0;i<this.goal;i++) this.spawnFish();
       confettiBurst();
       this.els.celEmoji.textContent = ["🎉","🐟","⭐","🎣","🛟"][Math.floor(rand()*5)];
       this.els.celTitle.textContent = nextPraise();
