@@ -288,9 +288,9 @@ body.screen-home #frame{display:block;}
     <div class="card-row">
       <button class="menu-card pulse" data-go="game">
         <span class="emoji">🎣</span>
-        <h2>Fishing Game</h2>
-        <span class="gd">Geama Iasgaich</span>
-        <p>Catch the fish and fill your basket!</p>
+        <h2>Herring Game</h2>
+        <span class="gd">Geama an Sgadain</span>
+        <p>Catch the silver herring and fill your creel!</p>
       </button>
       <button class="menu-card pulse" data-go="gallery">
         <span class="emoji">🖼️</span>
@@ -310,7 +310,7 @@ body.screen-home #frame{display:block;}
 <section id="game" class="screen">
   <div class="topbar">
     <button class="home-btn" data-go="home">🏠 Home</button>
-    <span class="title">Catch the Fish!</span>
+    <span class="title">Catch the Herring!</span>
     <button class="icon-btn" id="soundBtn" aria-label="Sound on/off">🔊</button>
   </div>
   <div class="game-stage">
@@ -406,7 +406,7 @@ body.screen-home #frame{display:block;}
 
     <div class="sea-region"></div>
     <div class="net" id="net">
-      <div class="net-label">Glac an t-iasg! 🐟</div>
+      <div class="net-label">Glac an sgadan! 🐟</div>
     </div>
 
     <!-- a grey seal surfacing -->
@@ -668,7 +668,8 @@ window.exhibitPlate = exhibitPlate;
   /* ============================================================
      FISHING GAME
      ============================================================ */
-  const FISH_COLORS = ["#5d7480","#2f6b5a","#3f6a8c","#8a6a3a","#2c6470","#6f5a86","#9a4536"];
+  // Herring backs: steely blue-greens — a uniform silver shoal of "silver darlings"
+  const FISH_COLORS = ["#5f7e8c","#5b8378","#6b8a93","#577a86","#638a80","#6e8f99"];
   const CONFETTI_COLORS = ["#a9762a","#e0bd6f","#3f6b39","#8c2f2a","#2c6470","#eef2f4"];
   // Facts about Barra (Eilean Bharraigh)
   const FUN_FACTS = [
@@ -847,19 +848,18 @@ window.exhibitPlate = exhibitPlate;
   };
 
   function fishSVG(back, dir){
-    // fish is drawn head-left; flip it to face RIGHT when swimming right (dir>0)
+    // a silver HERRING (drawn head-left; flip to face RIGHT when swimming right)
     const flip = dir>0 ? 'transform="scale(-1,1)" transform-origin="42 27"' : '';
     return `<svg viewBox="0 0 84 54"><g ${flip}>
-      <path d="M58,27 L82,12 L75,27 L82,42 Z" fill="${back}"/>
-      <path d="M30,13 Q41,2 52,15 Z" fill="${back}" opacity="0.9"/>
-      <ellipse cx="36" cy="27" rx="27" ry="15.5" fill="${back}"/>
-      <path d="M11,30 Q36,47 61,30 Q36,39 11,30 Z" fill="#eef2f4" opacity="0.92"/>
-      <g stroke="rgba(0,0,0,.22)" stroke-width="2" fill="none" stroke-linecap="round">
-        <path d="M26,23 q6 -3 12 0"/><path d="M30,20 q6 -3 12 0"/><path d="M34,17 q6 -3 12 0"/>
-      </g>
-      <path d="M16,24 q-3 3 0 7" stroke="rgba(0,0,0,.2)" stroke-width="2" fill="none"/>
-      <circle cx="19" cy="25" r="4.4" fill="#fff"/><circle cx="18.5" cy="25" r="2.3" fill="#16242b"/>
-      <path d="M9,27 q-3 1.5 0 3" stroke="rgba(0,0,0,.3)" stroke-width="1.6" fill="none"/>
+      <path d="M58,27 L82,13 L74,27 L82,41 Z" fill="#bcc8cf"/>
+      <ellipse cx="36" cy="27" rx="27" ry="13.5" fill="#dde6ea"/>
+      <path d="M12,24 Q36,11 60,25 Q36,18 12,24 Z" fill="${back}"/>
+      <path d="M13,30 Q36,41 59,30 Q36,35 13,30 Z" fill="#f6fafb" opacity="0.92"/>
+      <path d="M33,15 Q39,8 45,16 Z" fill="${back}" opacity="0.85"/>
+      <path d="M14,27 Q36,25.5 57,27" stroke="#a9bcc3" stroke-width="1.1" fill="none" opacity="0.7"/>
+      <path d="M17,23 Q36,21.5 53,23" stroke="#ffffff" stroke-width="0.9" fill="none" opacity="0.55"/>
+      <path d="M18,22 q-3 5 0 10" stroke="#a9bcc3" stroke-width="1.3" fill="none" opacity="0.6"/>
+      <circle cx="19" cy="25" r="4.1" fill="#fff"/><circle cx="18.6" cy="25" r="2.1" fill="#15222a"/>
     </g></svg>`;
   }
   function flipFish(f, dir){
