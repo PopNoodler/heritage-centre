@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Heritage Centre" />
+<meta name="theme-color" content="#0b232b" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<link rel="icon" type="image/png" href="icon-180.png" />
+<title>Heritage Centre — Kiosk Apps</title>
+<style>
+:root{
+  --sea2:#0b232b; --parch:#f0e6cd; --parch2:#e2cfa3; --ink:#2b2317; --ink-soft:#5b513c;
+  --bronze:#a9762a; --bronze-lt:#e0bd6f; --bronze-dk:#7c531a; --celtic-red:#8c2f2a;
+  --shadow:rgba(20,12,0,.35);
+}
+*{box-sizing:border-box;}
+body{margin:0;min-height:100vh;
+  font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif;
+  background:radial-gradient(135% 110% at 50% 0%,#34788a,var(--sea2));color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;}
+.crest{display:flex;align-items:center;gap:18px;}
+.crest .knot{width:46px;height:46px;color:var(--bronze-lt);}
+h1{font-size:40px;margin:0;font-variant:small-caps;letter-spacing:3px;color:var(--parch);
+  text-shadow:0 3px 8px rgba(0,0,0,.45);text-align:center;}
+.sub{color:var(--bronze-lt);font-style:italic;margin:8px 0 34px;font-size:20px;text-align:center;}
+.row{display:flex;gap:30px;flex-wrap:wrap;justify-content:center;}
+a.card{display:block;width:300px;text-decoration:none;color:var(--ink);
+  background:linear-gradient(180deg,var(--parch),var(--parch2));
+  border-radius:16px;padding:26px;text-align:center;
+  border:3px solid var(--bronze);outline:2px solid var(--parch);outline-offset:-7px;
+  box-shadow:0 12px 28px var(--shadow);transition:transform .12s;}
+a.card:active{transform:scale(.97);}
+a.card .e{font-size:76px;display:block;}
+a.card h2{margin:8px 0 2px;font-size:25px;font-variant:small-caps;letter-spacing:1px;}
+a.card .gd{display:block;font-style:italic;color:var(--celtic-red);font-size:16px;margin-bottom:6px;}
+a.card p{margin:0;color:var(--ink-soft);font-size:15px;}
+.note{margin-top:30px;font-size:15px;color:var(--bronze-lt);max-width:640px;text-align:center;line-height:1.5;}
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs>
+    <symbol id="triq" viewBox="-16 -16 32 32"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+      <circle cx="0" cy="-6" r="7"/><circle cx="5.2" cy="3" r="7"/><circle cx="-5.2" cy="3" r="7"/><circle cx="0" cy="0" r="13.5" stroke-width="1.6"/>
+    </g></symbol>
+  </defs></svg>
+
+  <div class="crest">
+    <svg class="knot"><use href="#triq"/></svg>
+    <h1>Heritage Centre — Interactive Stations</h1>
+    <svg class="knot"><use href="#triq"/></svg>
+  </div>
+  <p class="sub">Preview &amp; launcher. On each kiosk tablet, point the kiosk browser at the relevant app below.</p>
+  <div class="row">
+    <a class="card" href="main-app/index.html">
+      <span class="e">🎣</span>
+      <h2>Main Interactive App</h2>
+      <span class="gd">Geama &amp; Gailearaidh</span>
+      <p>Fishing game + exhibit gallery<br>(2× 10.1″ tablets)</p>
+    </a>
+    <a class="card" href="map-app/index.html">
+      <span class="e">🗺️</span>
+      <h2>Isle of Barra Map</h2>
+      <span class="gd">Eilean Bharraigh</span>
+      <p>Zoomable island map with points of interest<br>(1× 13″ tablet)</p>
+    </a>
+  </div>
+  <p class="note">This launcher is for testing only. In production, each tablet auto-launches its own app
+  in kiosk mode — see <strong>docs/KIOSK-SETUP.md</strong>.</p>
+</body>
+</html>
