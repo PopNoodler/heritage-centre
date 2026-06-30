@@ -61,26 +61,34 @@ button{font-family:inherit;cursor:pointer;border:none;}
 /* ---------- POI markers: carved-stone medallions ---------- */
 .poi{position:absolute;transform:translate(-50%,-100%);z-index:6;
   display:flex;flex-direction:column;align-items:center;background:none;}
-.poi .pin{position:relative;width:56px;height:56px;border-radius:50%;
+.poi.sel{z-index:12;}
+.poi .pin{position:relative;width:46px;height:46px;border-radius:50%;
   background:radial-gradient(circle at 38% 34%, #fbf3dc, var(--parch2));
   border:3px solid var(--bronze);
-  box-shadow:0 0 0 3px var(--parch), 0 0 0 5px var(--bronze-dk), 0 6px 12px var(--shadow);
+  box-shadow:0 0 0 3px var(--parch), 0 0 0 4px var(--bronze-dk), 0 5px 10px var(--shadow);
   display:flex;align-items:center;justify-content:center;}
-.poi .pin span{font-size:27px;line-height:1;}
-.poi .pin .ic{width:34px;height:34px;display:block;}
-.poi .pin::after{content:"";position:absolute;bottom:-12px;left:50%;
-  width:14px;height:14px;background:var(--bronze);transform:translateX(-50%) rotate(45deg);
+.poi .pin span{font-size:24px;line-height:1;}
+.poi .pin .ic{width:28px;height:28px;display:block;}
+.poi .pin::after{content:"";position:absolute;bottom:-10px;left:50%;
+  width:12px;height:12px;background:var(--bronze);transform:translateX(-50%) rotate(45deg);
   box-shadow:0 0 0 3px var(--parch);border-radius:0 0 3px 0;}
-.poi .lbl{margin-top:14px;background:linear-gradient(180deg,var(--parch),var(--parch2));
-  color:var(--ink);font-weight:700;font-size:16px;letter-spacing:.4px;
-  padding:5px 13px;border-radius:6px;border:1.5px solid var(--bronze);
-  box-shadow:0 3px 8px var(--shadow);white-space:nowrap;}
+/* labels are hidden in the overview and appear when you zoom in, or for the marker you tap */
+.poi .lbl{margin-top:12px;background:linear-gradient(180deg,var(--parch),var(--parch2));
+  color:var(--ink);font-weight:700;font-size:15px;letter-spacing:.3px;
+  padding:4px 11px;border-radius:6px;border:1.5px solid var(--bronze);
+  box-shadow:0 3px 8px var(--shadow);white-space:nowrap;display:none;}
+#world.labels .poi .lbl,.poi.sel .lbl{display:block;}
+.poi.sel .pin{transform:scale(1.12);}
 .poi:active .pin{transform:scale(.92);}
 .poi.bounce .pin{animation:pinbounce 2.4s ease-in-out infinite;}
 @keyframes pinbounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
-.poi.here .pin{border-color:var(--celtic-green);box-shadow:0 0 0 3px var(--parch),0 0 0 5px #2c4a26,0 6px 12px var(--shadow);}
+.poi.here .pin{border-color:var(--celtic-green);box-shadow:0 0 0 3px var(--parch),0 0 0 4px #2c4a26,0 5px 10px var(--shadow);}
 .poi.here .pin::after{background:var(--celtic-green);}
 .poi.here .lbl{background:var(--celtic-green);color:#fff;border-color:#2c4a26;}
+/* hotels & campsites — a distinct blue so they read as a separate category */
+.poi.hotel .pin,.poi.camp .pin{border-color:#2f6fb0;box-shadow:0 0 0 3px var(--parch),0 0 0 4px #1f4f80,0 5px 10px var(--shadow);}
+.poi.hotel .pin::after,.poi.camp .pin::after{background:#2f6fb0;}
+.poi.hotel .lbl,.poi.camp .lbl{border-color:#2f6fb0;color:#1f4f80;}
 
 /* ---------- zoom controls ---------- */
 .controls{position:absolute;right:calc(24px + env(safe-area-inset-right));
@@ -316,7 +324,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
   <button class="ctrl reset" id="reset" aria-label="Reset map">⤢</button>
 </div>
 
-<div class="hint">👆 Drag to move · Tap a marker to learn more</div>
+<div class="hint">👆 Drag &amp; pinch to zoom in for names · tap a marker to learn more</div>
 
 <div class="panel" id="panel">
   <button class="p-close" id="pClose" aria-label="Close">✕</button>
@@ -428,7 +436,35 @@ const POIS = [
 
   { x:648, y:892, icon:"🏝️", title:"Isle of Vatersay", gaelic:"Bhatarsaigh",
     desc:"Barra's southern neighbour, reached by a causeway built in 1991. It is famous for its twin white-sand beaches lying back to back across a narrow isthmus.",
-    fact:"A memorial recalls the 1853 wreck of the emigrant ship Annie Jane off the island.", motif:"🏝️" }
+    fact:"A memorial recalls the 1853 wreck of the emigrant ship Annie Jane off the island.", motif:"🏝️" },
+
+  /* ----- Hotels ----- */
+  { x:868, y:710, type:"hotel", icon:"🛏️", title:"Castlebay Hotel",
+    desc:"A traditional harbourfront hotel in the heart of Castlebay, looking out across the bay to Kisimul Castle.",
+    fact:"Castlebay is the island's main village and the arrival point for the ferry from Oban." },
+  { x:702, y:726, type:"hotel", icon:"🛏️", title:"Craigard Hotel",
+    desc:"A small, friendly hotel in Castlebay, a short stroll from the ferry pier and the village shops.",
+    fact:"It stands just above the harbour where the Oban ferry ties up." },
+  { x:1006, y:466, type:"hotel", icon:"🛏️", title:"Heathbank Hotel",
+    desc:"A welcoming hotel at Northbay on Barra's east side, handy for the Ardmhor ferry and the island's beaches.",
+    fact:"Northbay is a sheltered bay looking out towards the Sound of Barra." },
+  { x:470, y:560, type:"hotel", icon:"🛏️", title:"Isle of Barra Beach Hotel",
+    desc:"Wrapped around Tangasdale Beach on Halaman Bay, with sea-view rooms looking out over the Atlantic.",
+    fact:"Guests can watch gannets diving and otters on the shore right from the hotel." },
+
+  /* ----- Campsites ----- */
+  { x:760, y:130, type:"camp", icon:"⛺", title:"Croft No. 2 Campsite",
+    desc:"A quiet caravan and campsite at Scurrival Point, Eoligarry — a short walk from the mile-long white sands of Tràigh Scurrival.",
+    fact:"It sits at the very north of Barra, beyond the airport beach." },
+  { x:886, y:152, type:"camp", icon:"⛺", title:"Scurrival Campsite",
+    desc:"A laid-back, semi-wild campsite in Eoligarry, with modern facilities housed in a renovated island home.",
+    fact:"Eoligarry lies on the sandy northern peninsula of the island." },
+  { x:498, y:448, type:"camp", icon:"⛺", title:"Wavecrest Campsite, Borve",
+    desc:"A west-coast campsite at Borve with showers, hook-ups and a small kitchen, close to the open Atlantic beaches.",
+    fact:"Borve's shores face the full sweep of the Atlantic Ocean." },
+  { x:708, y:872, type:"camp", icon:"⛺", title:"Vatersay Camping",
+    desc:"Informal camping and campervan pitches on the machair beside Vatersay's beautiful twin beaches.",
+    fact:"Vatersay is reached from Barra by a causeway built in 1991." }
 ];
 
 /* ---- antique illuminated plate for the info panel (until real photos are added) ---- */
@@ -458,7 +494,10 @@ const MAP_W = 1600, MAP_H = 1000;
 let scale = 1, tx = 0, ty = 0;
 const MIN = 0.5, MAX = 3.5;
 
-function apply(){ world.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; }
+function apply(){
+  world.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+  world.classList.toggle("labels", scale >= 1.15);  // names appear as you zoom in
+}
 
 function clamp(){
   const vw = viewport.clientWidth, vh = viewport.clientHeight;
@@ -550,7 +589,9 @@ function glyph(name){
     fish:`<path d="M5 16C9 10 19 10 23 16 19 22 9 22 5 16Z"/><path d="M23 16 29 11.5 27 16 29 20.5Z"/><circle cx="10.5" cy="14.8" r="1.3" fill="${C}"/>`,
     stones:`<path d="M9 27 8 14a3 3 0 0 1 6 0L13 27Z"/><path d="M22 27 21 12a3.2 3.2 0 0 1 6.4 0L25 27Z"/><path d="M10.5 13.2h14v3.4h-14Z"/>`,
     shell:`<path d="M16 7C8.5 7 4.5 15 5.5 23h21C27.5 15 23.5 7 16 7Z"/><g stroke="${C}" stroke-width="1.4" fill="none"><path d="M16 9v13"/><path d="M11.6 9.6 10 22"/><path d="M20.4 9.6 22 22"/></g>`,
-    island:`<path d="M3 25c4-7 9-7 13-3 4-4 9-4 13 3Z"/><path d="M16 22V9" stroke="${D}" stroke-width="1.8"/><path d="M16 9h7v4.5h-7Z"/>`
+    island:`<path d="M3 25c4-7 9-7 13-3 4-4 9-4 13 3Z"/><path d="M16 22V9" stroke="${D}" stroke-width="1.8"/><path d="M16 9h7v4.5h-7Z"/>`,
+    bed:`<rect x="4" y="12" width="3" height="15"/><rect x="4" y="18" width="25" height="6" rx="1.5"/><rect x="26" y="24" width="3" height="3"/><rect x="9" y="14" width="9" height="4" rx="1.8" fill="${C}"/>`,
+    tent:`<path d="M16 5 4 27 28 27Z"/><path d="M16 13 10 27 22 27Z" fill="${C}"/><path d="M16 5V27" stroke="${D}" stroke-width="1.6"/><path d="M2 27h28" stroke="${D}" stroke-width="2.4" stroke-linecap="round"/>`
   };
   return `<svg class="ic" width="34" height="34" viewBox="0 0 32 32" fill="${D}" aria-hidden="true">${ic[name]||ic.island}</svg>`;
 }
@@ -558,17 +599,25 @@ const ICON_FOR = {
   "Kisimul Castle":"castle", "Castlebay":"anchor", "Dualchas — Barra Heritage Centre":"museum",
   "Heaval":"mountain", "Barra Airport — Tràigh Mhòr":"plane", "Cille Bharra":"church",
   "Ardmhor Ferry":"boat", "Northbay":"fish", "Dùn Bharpa":"stones",
-  "Halaman Bay & West Beaches":"shell", "Isle of Vatersay":"island"
+  "Halaman Bay & West Beaches":"shell", "Isle of Vatersay":"island",
+  "Castlebay Hotel":"bed", "Craigard Hotel":"bed", "Heathbank Hotel":"bed", "Isle of Barra Beach Hotel":"bed",
+  "Croft No. 2 Campsite":"tent", "Scurrival Campsite":"tent", "Wavecrest Campsite, Borve":"tent", "Vatersay Camping":"tent"
 };
 
 /* ---- build POI markers ---- */
+let selectedMarker = null;
+function selectMarker(b){
+  if(selectedMarker) selectedMarker.classList.remove("sel");
+  selectedMarker = b;
+  if(b) b.classList.add("sel");
+}
 POIS.forEach((p, i)=>{
   const b = document.createElement("button");
-  b.className = "poi bounce" + (p.here ? " here" : "");
+  b.className = "poi bounce" + (p.here ? " here" : "") + (p.type ? " "+p.type : "");
   b.style.left = p.x+"px"; b.style.top = p.y+"px";
-  b.style.animationDelay = (i*0.2)+"s";
+  b.style.animationDelay = (i*0.12)+"s";
   b.innerHTML = `<span class="pin">${glyph(ICON_FOR[p.title])}</span><span class="lbl">${p.title}</span>`;
-  b.addEventListener("click", ev=>{ if(moved) return; openPanel(p); });
+  b.addEventListener("click", ev=>{ if(moved) return; selectMarker(b); openPanel(p); });
   world.appendChild(b);
 });
 
@@ -585,7 +634,7 @@ function openPanel(p){
   panel.classList.add("open");
   resetIdle();
 }
-function closePanel(){ panel.classList.remove("open"); }
+function closePanel(){ panel.classList.remove("open"); selectMarker(null); }
 document.getElementById("pClose").onclick = ()=>{ closePanel(); resetIdle(); };
 
 /* ---- kiosk idle reset ---- */
