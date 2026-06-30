@@ -229,6 +229,36 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .fact-bubble b{color:var(--celtic-red);}
 
 /* ============================================================
+   BUILD A BLACKHOUSE
+   ============================================================ */
+#build{background:linear-gradient(180deg,#c4d2d2 0%, #aebfbb 38%, #8fa68f 100%);}
+.build-stage{position:absolute;inset:66px 0 0 0;display:flex;flex-direction:column;align-items:center;
+  padding:6px 16px calc(104px + env(safe-area-inset-bottom));}
+.build-progress{display:flex;gap:10px;margin:4px 0 2px;}
+.build-progress .dot{width:14px;height:14px;border-radius:50%;
+  background:rgba(251,245,230,.55);border:2px solid var(--bronze);transition:background .3s;}
+.build-progress .dot.done{background:var(--bronze);}
+.build-house{width:min(78vw,600px);max-height:54vh;flex:0 1 auto;
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.25));}
+.build-layer{opacity:0;transform:translateY(12px);transition:opacity .5s ease, transform .5s ease;}
+.build-layer.on{opacity:1;transform:none;}
+.smoke{stroke-dasharray:7 11;animation:smoke 3s linear infinite;opacity:.75;}
+@keyframes smoke{from{stroke-dashoffset:0;}to{stroke-dashoffset:-180;}}
+.fire-glow{transform-origin:center;animation:flick 1.2s ease-in-out infinite;}
+@keyframes flick{0%,100%{opacity:.5;}50%{opacity:.9;}}
+.build-fact{margin-top:12px;max-width:min(90vw,680px);text-align:center;
+  background:linear-gradient(180deg,var(--parch),var(--parch2));color:var(--ink);
+  font-size:clamp(16px,2.2vw,20px);line-height:1.4;padding:12px 22px;border-radius:14px;
+  border:2px solid var(--bronze);box-shadow:0 5px 12px var(--shadow);}
+.build-fact b{color:var(--celtic-red);}
+.build-btn{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom));left:50%;
+  transform:translateX(-50%);background:linear-gradient(180deg,var(--bronze-lt),var(--bronze));
+  color:#fff;font-size:23px;font-weight:800;padding:15px 38px;border-radius:50px;
+  border:2.5px solid var(--bronze-dk);box-shadow:0 6px 14px var(--shadow);
+  display:flex;align-items:center;gap:10px;animation:bob 1.4s ease-in-out infinite;}
+.build-btn:active{transform:translateX(-50%) scale(.96);}
+
+/* ============================================================
    GALLERY
    ============================================================ */
 #gallery{background:radial-gradient(135% 120% at 50% 0%, #2f6b78, var(--sea2));}
@@ -328,12 +358,113 @@ body.screen-home #frame{display:block;}
         <span class="gd">Gailearaidh</span>
         <p>Explore pictures from our collection</p>
       </button>
+
+      <button class="menu-card pulse" data-go="build">
+        <span class="emoji"><svg width="120" height="84" viewBox="0 0 120 84" aria-hidden="true">
+          <rect x="6" y="74" width="108" height="8" rx="3" fill="#6f8f55"/>
+          <path d="M14 76 V44 Q14 38 22 38 L98 38 Q106 38 106 44 V76 Z" fill="#9a958a" stroke="#6f6a60" stroke-width="2"/>
+          <g stroke="#6f6a60" stroke-width="1" opacity="0.5"><path d="M14 54h92M14 64h92M40 44v32M70 44v32"/></g>
+          <rect x="52" y="56" width="16" height="20" rx="2" fill="#3a2f23"/>
+          <path d="M6 44 Q60 8 114 44 Q60 30 6 44 Z" fill="#b8843f" stroke="#7c531a" stroke-width="2"/>
+          <g stroke="#7c531a" stroke-width="1" opacity="0.5"><path d="M24 40 30 24M48 34 52 18M72 34 68 18M96 40 90 24"/></g>
+          <g stroke="#5a4a36" stroke-width="1.4" opacity="0.7" fill="none"><path d="M20 42 40 22M50 38 70 20M70 38 90 22"/></g>
+          <path d="M58 20 q-4 -8 2 -14 q-5 6 -1 14 Z" fill="#b9b3a8" opacity="0.8"/>
+        </svg></span>
+        <h2>Build a Blackhouse</h2>
+        <span class="gd">Tog Taigh-dubh</span>
+        <p>Build an old Barra house, step by step!</p>
+      </button>
     </div>
   </div>
   <svg class="wave-deco" viewBox="0 0 1440 90" preserveAspectRatio="none">
     <path fill="#0b232b" d="M0,40 C240,90 480,0 720,40 C960,80 1200,10 1440,45 L1440,90 L0,90 Z"/>
     <path fill="#a9762a" opacity="0.5" d="M0,52 C240,96 480,14 720,52 C960,90 1200,24 1440,56 L1440,62 C1200,30 960,96 720,58 C480,20 240,102 0,58 Z"/>
   </svg>
+</section>
+
+<!-- =================== BUILD A BLACKHOUSE =================== -->
+<section id="build" class="screen">
+  <div class="topbar">
+    <button class="home-btn" data-go="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="#7c531a" aria-hidden="true"><path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/></svg> Home</button>
+    <span class="title">Build a Blackhouse!</span>
+    <span style="width:54px"></span>
+  </div>
+  <div class="build-stage">
+    <div class="build-progress" id="buildDots"></div>
+    <svg class="build-house" id="buildHouse" viewBox="0 0 480 340" aria-hidden="true">
+      <rect x="0" y="278" width="480" height="62" fill="#7e9456"/>
+      <rect x="0" y="278" width="480" height="9" fill="#90a566"/>
+
+      <g class="build-layer" id="l-walls">
+        <path d="M70,284 V202 Q70,178 100,178 L380,178 Q410,178 410,202 V284 Z" fill="#9c968b" stroke="#6f6a60" stroke-width="3"/>
+        <g stroke="#7a756b" stroke-width="1.3" opacity="0.5" fill="none">
+          <path d="M72,200 H408M72,218 H408M72,236 H408M72,254 H408M72,272 H408"/>
+          <path d="M110,200 V284M150,182 V284M190,200 V284M230,182 V284M270,200 V284M310,182 V284M350,200 V284M390,200 V284"/>
+        </g>
+        <g fill="#aba499" opacity="0.45"><ellipse cx="128" cy="209" rx="13" ry="6"/><ellipse cx="250" cy="227" rx="14" ry="6"/><ellipse cx="350" cy="245" rx="12" ry="6"/><ellipse cx="100" cy="263" rx="12" ry="6"/></g>
+        <path d="M206,284 V238 Q206,222 230,222 Q254,222 254,238 V284 Z" fill="#2c241c"/>
+        <rect x="322" y="212" width="22" height="22" rx="2" fill="#2c241c"/>
+        <path d="M333,212 V234M322,223 H344" stroke="#6f6a60" stroke-width="2"/>
+      </g>
+
+      <g class="build-layer" id="l-frame" stroke="#6e4a16" stroke-linecap="round" fill="none">
+        <path d="M118,178 L240,110" stroke-width="6"/><path d="M362,178 L240,110" stroke-width="6"/>
+        <path d="M160,178 L240,132" stroke-width="5"/><path d="M320,178 L240,132" stroke-width="5"/>
+        <path d="M150,120 H330" stroke-width="5"/><path d="M175,148 H305" stroke-width="4" opacity="0.85"/>
+      </g>
+
+      <g class="build-layer" id="l-thatch">
+        <path d="M56,190 Q56,116 240,102 Q424,116 424,190 Q240,170 56,190 Z" fill="#b8843f" stroke="#7c531a" stroke-width="2"/>
+        <g stroke="#996931" stroke-width="1.3" opacity="0.55" fill="none">
+          <path d="M90,184 104,150M126,178 136,140M170,172 176,128M214,168 216,120M266,168 264,120M310,172 304,128M352,178 344,140M392,184 380,150"/>
+        </g>
+        <path d="M64,126 Q240,110 416,126" stroke="#7c531a" stroke-width="3" fill="none"/>
+      </g>
+
+      <g class="build-layer" id="l-ropes">
+        <g stroke="#5a4a36" stroke-width="2" fill="none" opacity="0.85">
+          <path d="M120,182 Q240,116 360,182"/><path d="M170,184 Q240,120 310,184"/>
+          <path d="M240,104 V186M150,150 H330M120,168 H360"/>
+        </g>
+        <g fill="#8a857a" stroke="#5a554c" stroke-width="1.5">
+          <circle cx="96" cy="198" r="7"/><circle cx="160" cy="196" r="7"/><circle cx="240" cy="194" r="7"/><circle cx="320" cy="196" r="7"/><circle cx="384" cy="198" r="7"/>
+        </g>
+      </g>
+
+      <g class="build-layer" id="l-fire">
+        <ellipse class="fire-glow" cx="230" cy="272" rx="20" ry="14" fill="#ff9a3c"/>
+        <ellipse cx="230" cy="276" rx="9" ry="6" fill="#ffd45a"/>
+        <g class="smoke" stroke="#d7d0c4" stroke-width="6" stroke-linecap="round" fill="none">
+          <path d="M240,104 q-12,-18 2,-34 q-12,-16 2,-32"/>
+        </g>
+      </g>
+
+      <g class="build-layer" id="l-folk">
+        <g transform="translate(372,250)">
+          <ellipse cx="0" cy="0" rx="30" ry="18" fill="#b5712e"/>
+          <rect x="-22" y="10" width="6" height="20" fill="#7c4a1e"/><rect x="-6" y="12" width="6" height="18" fill="#7c4a1e"/><rect x="10" y="12" width="6" height="18" fill="#7c4a1e"/><rect x="22" y="10" width="6" height="20" fill="#7c4a1e"/>
+          <ellipse cx="28" cy="-7" rx="14" ry="13" fill="#c07e36"/>
+          <path d="M16,-15 q-8,-9 -3,-15M40,-15 q8,-9 3,-15" stroke="#e8e2d2" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M20,-12 q8,9 16,0 q-2,8 -8,8 q-6,0 -8,-8 Z" fill="#caa56a"/>
+          <circle cx="25" cy="-4" r="1.8" fill="#2a201c"/>
+        </g>
+        <g transform="translate(232,252)">
+          <circle cx="0" cy="-26" r="7" fill="#e8c9a0"/>
+          <path d="M-8,-20 Q0,-24 8,-20 L7,8 H-7 Z" fill="#4f6b3f"/>
+        </g>
+      </g>
+    </svg>
+    <div class="build-fact" id="buildFact">A blackhouse — <b>taigh-dubh</b> — is an old Barra home. Tap the button to build one, step by step!</div>
+    <button class="build-btn" id="buildBtn">Build the stone walls →</button>
+  </div>
+  <div class="celebrate" id="buildCel">
+    <div class="celebrate-card">
+      <div class="big">🏡</div>
+      <h2>Sgoinneil! Well done!</h2>
+      <p>You've built a <b>taigh-dubh</b> — a real old Barra blackhouse!</p>
+      <button class="again" id="buildAgain">Build again 🔨</button>
+    </div>
+  </div>
 </section>
 
 <!-- =================== FISHING GAME =================== -->
@@ -677,6 +808,7 @@ window.exhibitPlate = exhibitPlate;
     if (id === "game") Game.start();
     else Game.stop();
     if (id === "gallery") Gallery.ensure();
+    if (id === "build") Build.start();
     resetIdle();
   }
   // Bind directly to each control AND accept touch — robust on iOS Safari.
@@ -1039,10 +1171,70 @@ window.exhibitPlate = exhibitPlate;
   ["pointerdown","touchstart","keydown"].forEach(ev=>
     document.addEventListener(ev, resetIdle, {passive:true}));
 
+  /* ============================================================
+     BUILD A BLACKHOUSE (taigh-dubh) — step-by-step, with real facts
+     ============================================================ */
+  const Build = {
+    i:0, dots:[],
+    steps:[
+      { layer:"l-walls",  next:"Raise the roof frame →",
+        fact:"A blackhouse — <b>taigh-dubh</b> — had double walls of dry beach stone packed with earth, up to 1.5 m thick. The corners were rounded to beat the Atlantic wind." },
+      { layer:"l-frame",  next:"Thatch the roof →",
+        fact:"Wood was scarce on Barra, so the curved roof timbers — the <b>crucks</b> — were precious, often shaped from driftwood washed up on the shore." },
+      { layer:"l-thatch", next:"Rope it down →",
+        fact:"The roof was <b>thatched</b> with heather, straw or reeds, laid on the inner edge of the wall so the rain soaked into the earth core." },
+      { layer:"l-ropes",  next:"Light the peat fire →",
+        fact:"To stand up to the gales, the thatch was lashed with <b>heather ropes</b> and weighed down with heavy hanging stones." },
+      { layer:"l-fire",   next:"Bring the family in →",
+        fact:"A <b>peat fire</b> burned in the middle of the floor day and night. With no chimney, smoke seeped through the thatch — that soot is why it's a ‘black’ house!" },
+      { layer:"l-folk",   next:"Finish the house ✓",
+        fact:"The family lived at one end and their <b>cattle</b> at the other, under one roof — the byre kept everyone warm through the long winter." }
+    ],
+    init(){
+      this.house = document.getElementById("buildHouse");
+      this.fact = document.getElementById("buildFact");
+      this.btn = document.getElementById("buildBtn");
+      this.cel = document.getElementById("buildCel");
+      const wrap = document.getElementById("buildDots");
+      for(let k=0;k<this.steps.length;k++){ const d=document.createElement("span"); d.className="dot"; wrap.appendChild(d); this.dots.push(d); }
+      bindTap(this.btn, ()=>this.tap());
+      bindTap(this.house, ()=>this.tap());
+      bindTap(document.getElementById("buildAgain"), ()=>{ this.cel.classList.remove("show"); this.reset(); });
+    },
+    start(){ this.reset(); },
+    reset(){
+      this.i = 0;
+      this.steps.forEach(s=>document.getElementById(s.layer).classList.remove("on"));
+      this.dots.forEach(d=>d.classList.remove("done"));
+      this.fact.innerHTML = "A blackhouse — <b>taigh-dubh</b> — is an old Barra home. Tap to build one, step by step!";
+      this.btn.textContent = "Build the stone walls →";
+      this.btn.style.display = "flex";
+      this.cel.classList.remove("show");
+    },
+    tap(){
+      if(this.i >= this.steps.length) return;
+      const s = this.steps[this.i];
+      document.getElementById(s.layer).classList.add("on");
+      this.fact.innerHTML = s.fact;
+      if(this.dots[this.i]) this.dots[this.i].classList.add("done");
+      Sound.blip(420 + this.i*55, 0.12, "triangle");
+      this.i++;
+      resetIdle();
+      if(this.i < this.steps.length){
+        this.btn.textContent = s.next;
+      } else {
+        this.btn.style.display = "none";
+        Sound.win();
+        setTimeout(()=>this.cel.classList.add("show"), 800);
+      }
+    }
+  };
+
   /* ---------- boot ---------- */
   Game.init();
+  Build.init();
   const startHash = (location.hash || "").replace("#","");
-  if (startHash === "game" || startHash === "gallery") show(startHash);
+  if (startHash === "game" || startHash === "gallery" || startHash === "build") show(startHash);
   else document.body.className = "screen-home";
   resetIdle();
 })();
