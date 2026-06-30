@@ -53,10 +53,12 @@ button{font-family:inherit;cursor:pointer;border:none;}
 
 /* ---------- map viewport ---------- */
 #viewport{position:absolute;inset:0;overflow:hidden;
-  background:radial-gradient(135% 135% at 50% 42%, #34788a, var(--sea2));cursor:grab;}
+  background:#aad6e4;cursor:grab;}  /* matches the CARTO sea so the map blends into the surround */
 #viewport.dragging{cursor:grabbing;}
-#world{position:absolute;top:0;left:0;width:1600px;height:1000px;transform-origin:0 0;will-change:transform;}
-#world>svg{position:absolute;inset:0;width:1600px;height:1000px;}
+#world{position:absolute;top:0;left:0;width:1024px;height:1536px;transform-origin:0 0;will-change:transform;}
+#world .tile{position:absolute;width:256px;height:256px;pointer-events:none;}
+.osm-credit{position:absolute;left:8px;bottom:6px;z-index:30;font:11px Georgia,serif;
+  color:#3b4a52;background:rgba(251,245,230,.8);padding:2px 7px;border-radius:4px;pointer-events:none;}
 
 /* ---------- POI markers: carved-stone medallions ---------- */
 .poi{position:absolute;transform:translate(-50%,-100%);z-index:6;background:none;}
@@ -168,134 +170,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
 
 <div id="viewport">
   <div id="world">
-    <!-- ===== Top-down map of Barra & Vatersay (north is up) ===== -->
-    <svg viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg" aria-label="Map of the Isle of Barra">
-      <defs>
-        <linearGradient id="landg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#8fab68"/><stop offset="1" stop-color="#54683c"/>
-        </linearGradient>
-        <radialGradient id="hillg" cx="50%" cy="38%" r="62%">
-          <stop offset="0" stop-color="#9a7a44"/><stop offset="0.55" stop-color="#74894f"/>
-          <stop offset="1" stop-color="#54683c"/>
-        </radialGradient>
-      </defs>
-
-      <!-- surrounding sea labels (antique chart lettering) -->
-      <g fill="#cdbf9c" opacity="0.42" font-weight="700" font-style="italic" text-anchor="middle"
-         font-family="Georgia, 'Times New Roman', serif">
-        <text x="285" y="520" font-size="34" letter-spacing="3">An Cuan</text>
-        <text x="285" y="560" font-size="34" letter-spacing="3">Siar</text>
-        <text x="285" y="592" font-size="18" letter-spacing="2" font-style="normal">(The Atlantic)</text>
-        <text x="820" y="66" font-size="26" letter-spacing="2">Caolas Bharraigh · Sound of Barra</text>
-        <text x="1360" y="470" font-size="28" letter-spacing="3">An Cuan Sgìth</text>
-        <text x="1360" y="500" font-size="17" letter-spacing="2" font-style="normal">(The Minch)</text>
-        <text x="648" y="978" font-size="22" letter-spacing="2">Caolas Bhatarsaigh</text>
-      </g>
-      <!-- antique chart swells -->
-      <g opacity="0.14" stroke="#d8c79c" stroke-width="2.5" fill="none">
-        <path d="M170 300 q26 -13 52 0 t52 0"/><path d="M1330 250 q26 -13 52 0 t52 0"/>
-        <path d="M1360 660 q26 -13 52 0 t52 0"/><path d="M250 800 q26 -13 52 0 t52 0"/>
-        <path d="M1180 880 q26 -13 52 0 t52 0"/>
-      </g>
-
-      <!-- a longship at sea (antique-map decoration) -->
-      <g transform="translate(232,742) scale(1.05)" opacity="0.5" stroke="#cdbf9c" stroke-width="3" fill="none" stroke-linecap="round">
-        <path d="M-46 8 Q0 30 46 8 L40 0 Q0 12 -40 0 Z" fill="#cdbf9c" fill-opacity="0.25"/>
-        <path d="M-52 6 Q-58 -8 -46 -10"/><path d="M52 6 Q58 -8 46 -10"/>
-        <line x1="0" y1="6" x2="0" y2="-34"/>
-        <path d="M-22 -30 H22 V-12 H-22 Z" fill="#cdbf9c" fill-opacity="0.18"/>
-        <path d="M-22 -21 H22 M-8 -30 V-12 M8 -30 V-12"/>
-      </g>
-      <!-- a coiled sea-serpent (antique-map decoration) -->
-      <g transform="translate(1280,790)" opacity="0.42" stroke="#cdbf9c" stroke-width="4" fill="none" stroke-linecap="round">
-        <path d="M-70 0 q18 -26 36 0 t36 0 t36 0"/>
-        <path d="M44 -2 q14 -8 22 2 q-8 6 -16 2" fill="#cdbf9c" fill-opacity="0.2"/>
-        <circle cx="60" cy="-3" r="2" fill="#cdbf9c" stroke="none"/>
-      </g>
-
-      <!-- ===== VATERSAY ===== -->
-      <path fill="url(#landg)" stroke="var(--sand)" stroke-width="9" d="
-        M560,792 C600,772 660,772 690,790 C705,800 700,816 686,824
-        C724,830 760,852 752,892 C744,930 690,940 648,922
-        C636,952 596,956 572,932 C556,916 560,898 574,888
-        C540,884 512,860 520,826 C526,800 540,800 560,792 Z"/>
-      <path fill="var(--beach)" opacity="0.95" d="M584,820 q40 -16 92 -2 q-46 26 -92 2 Z"/>
-      <path fill="var(--beach)" opacity="0.95" d="M600,902 q40 14 86 0 q-44 24 -86 0 Z"/>
-
-      <!-- Vatersay Causeway -->
-      <path stroke="var(--sand)" stroke-width="12" stroke-linecap="round" d="M666,742 L640,792"/>
-      <path stroke="#6e5536" stroke-width="4" stroke-linecap="round" d="M666,742 L640,792"/>
-
-      <!-- ===== BARRA (main island + Eoligarry peninsula) ===== -->
-      <path fill="url(#landg)" stroke="var(--sand)" stroke-width="10" d="
-        M812,120
-        C864,126 892,150 884,196
-        C879,224 860,238 842,250
-        C852,286 872,300 906,302
-        C842,322 836,360 866,372
-        C922,360 972,332 1010,352
-        C1058,374 1066,404 1052,432
-        C1090,452 1108,470 1100,500
-        C1058,500 1024,470 1006,486
-        C1040,512 1074,520 1064,556
-        C1112,548 1142,520 1146,556
-        C1150,592 1120,612 1086,610
-        C1072,654 1030,690 980,700
-        C940,706 916,690 906,704
-        C892,724 858,726 838,710
-        C812,732 770,734 752,716
-        C720,732 672,726 654,704
-        C596,716 540,706 504,672
-        C462,634 446,596 452,560
-        C432,520 436,470 458,438
-        C476,408 470,392 486,372
-        C520,344 566,344 596,356
-        C636,330 690,326 716,344
-        C742,322 762,300 760,268
-        C742,250 740,210 752,176
-        C766,144 786,126 812,120 Z"/>
-
-      <!-- heather moor patches -->
-      <g fill="var(--heather)" opacity="0.22">
-        <ellipse cx="560" cy="500" rx="70" ry="40"/>
-        <ellipse cx="720" cy="630" rx="80" ry="44"/>
-        <ellipse cx="930" cy="540" rx="66" ry="42"/>
-        <ellipse cx="640" cy="648" rx="54" ry="32"/>
-        <ellipse cx="1010" cy="470" rx="48" ry="30"/>
-      </g>
-
-      <!-- Tràigh Mhòr — the cockle-shell airport beach -->
-      <path fill="var(--beach)" opacity="0.97" d="
-        M868,300 C900,318 950,330 1006,352 C972,372 922,378 884,372
-        C858,360 852,322 868,300 Z"/>
-      <!-- West-coast machair beaches -->
-      <path fill="var(--beach)" opacity="0.95" d="
-        M452,560 C436,512 440,470 460,440 C476,460 472,520 470,560
-        C466,576 458,576 452,560 Z"/>
-      <path fill="var(--beach)" opacity="0.9" d="M724,332 q34 18 8 56 q-30 -8 -8 -56 Z"/>
-
-      <!-- high ground: Heaval and the central hills -->
-      <ellipse cx="838" cy="556" rx="78" ry="58" fill="url(#hillg)" opacity="0.92"/>
-      <g stroke="#5a4326" stroke-width="2" fill="none" opacity="0.5">
-        <ellipse cx="838" cy="552" rx="50" ry="36"/><ellipse cx="838" cy="550" rx="28" ry="20"/>
-      </g>
-      <path d="M838 524 l17 28 l-34 0 Z" fill="#6e5536" opacity="0.85"/>
-      <ellipse cx="700" cy="470" rx="56" ry="40" fill="url(#hillg)" opacity="0.7"/>
-      <ellipse cx="980" cy="600" rx="52" ry="36" fill="url(#hillg)" opacity="0.6"/>
-
-      <!-- A888 ring road -->
-      <path fill="none" stroke="#d8c79c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"
-        opacity="0.9" stroke-dasharray="1 16" d="
-        M752,706 C660,700 560,688 512,628 C476,584 480,512 506,452
-        C548,404 628,392 700,408 C820,430 950,470 1004,520
-        C1040,560 1044,628 992,668 C928,706 836,710 752,706 Z"/>
-
-      <!-- settlement / woodland marks -->
-      <g fill="var(--moss)" opacity="0.8">
-        <circle cx="640" cy="560" r="8"/><circle cx="662" cy="552" r="6"/>
-        <circle cx="980" cy="650" r="7"/><circle cx="1000" cy="642" r="5"/>
-      </g>
-    </svg>
+    <!-- OpenStreetMap (CARTO Voyager) basemap tiles + POI markers injected by JS -->
     <!-- POI markers injected by JS -->
   </div>
 </div>
@@ -328,6 +203,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
 </div>
 
 <div class="hint">👆 Drag &amp; pinch to zoom in for names · tap a marker to learn more</div>
+<div class="osm-credit">© OpenStreetMap contributors · © CARTO</div>
 
 <div class="panel" id="panel">
   <button class="p-close" id="pClose" aria-label="Close">✕</button>
@@ -397,75 +273,75 @@ button{font-family:inherit;cursor:pointer;border:none;}
    To use a real photo set  photo:"assets/kisimul.jpg".
    ============================================================ */
 const POIS = [
-  { x:760, y:738, icon:"🏰", title:"Kisimul Castle", gaelic:"Caisteal Chiosmuil",
+  { lat:56.9556, lng:-7.4925, icon:"🏰", title:"Kisimul Castle", gaelic:"Caisteal Chiosmuil",
     desc:"A medieval stronghold rising straight out of the sea in Castlebay, the ancestral seat of Clan MacNeil. A short boat trip takes visitors out to the restored keep and great hall.",
     fact:"The MacNeil chief leases the castle to the nation for £1 and a bottle of whisky a year.", motif:"🏰" },
 
-  { x:792, y:702, icon:"⚓", title:"Castlebay", gaelic:"Bàgh a' Chaisteil",
+  { lat:56.9567, lng:-7.4855, icon:"⚓", title:"Castlebay", gaelic:"Bàgh a' Chaisteil",
     desc:"Barra's main village and ferry port, curving around the bay beneath the Church of Our Lady, Star of the Sea. The boat from Oban arrives here.",
     fact:"Castlebay was once a busy herring port, with hundreds of boats filling the bay.", motif:"⚓" },
 
-  { x:648, y:678, icon:"🏛️", title:"Dualchas — Barra Heritage Centre", gaelic:"Dualchas", here:true,
+  { lat:56.9587, lng:-7.4798, icon:"🏛️", title:"Dualchas — Barra Heritage Centre", gaelic:"Dualchas", here:true,
     desc:"You are here! The island's heritage and cultural centre in Castlebay tells Barra's story — and is home to this interactive map.",
     fact:"The centre runs regular events and activities, especially for children.", motif:"🏛️" },
 
-  { x:840, y:560, icon:"⛰️", title:"Heaval", gaelic:"Sheabhal",
+  { lat:56.9690, lng:-7.4660, icon:"⛰️", title:"Heaval", gaelic:"Sheabhal",
     desc:"Barra's highest hill at 383 m (1,257 ft). A white marble statue of Our Lady of the Sea stands on its slopes, watching over the island and the sea.",
     fact:"From the summit you can see south to Vatersay, Mingulay and Berneray.", motif:"⛰️" },
 
-  { x:930, y:300, icon:"✈️", title:"Barra Airport — Tràigh Mhòr", gaelic:"An Tràigh Mhòr",
+  { lat:57.0226, lng:-7.4436, icon:"✈️", title:"Barra Airport — Tràigh Mhòr", gaelic:"An Tràigh Mhòr",
     desc:"The only airport in the world with scheduled flights landing on a beach — the cockle-shell sands of Tràigh Mhòr. Between flights it is a magnificent public beach.",
     fact:"Flight times change with the tide, because high water covers the runway!", motif:"✈️" },
 
-  { x:818, y:172, icon:"⛪", title:"Cille Bharra", gaelic:"Cille Bharra",
+  { lat:57.0336, lng:-7.4028, icon:"⛪", title:"Cille Bharra", gaelic:"Cille Bharra",
     desc:"An ancient church and burial ground at Eoligarry, named after St Barr. Its medieval chapel may have origins as early as the 7th century.",
     fact:"Sir Compton Mackenzie, author of Whisky Galore, is buried here.", motif:"⛪" },
 
-  { x:1052, y:392, icon:"⛴️", title:"Ardmhor Ferry", gaelic:"Àird Mhòr",
+  { lat:57.0089, lng:-7.4008, icon:"⛴️", title:"Ardmhor Ferry", gaelic:"Àird Mhòr",
     desc:"The small north-eastern ferry terminal, where the ferry crosses the Sound of Barra to Eriskay and on to South Uist.",
     fact:"It is one of two ferry routes that connect Barra to the wider world.", motif:"⛴️" },
 
-  { x:1058, y:520, icon:"🐟", title:"Northbay", gaelic:"Bàgh a Tuath",
+  { lat:56.9985, lng:-7.4185, icon:"🐟", title:"Northbay", gaelic:"Bàgh a Tuath",
     desc:"A village set around a sheltered east-coast bay. A statue of St Finbarr stands on a small islet, looking out over the water.",
     fact:"The waters here have long supported fishing and shellfish for island families.", motif:"🐟" },
 
-  { x:684, y:476, icon:"🪨", title:"Dùn Bharpa", gaelic:"Dùn Bharpa",
+  { lat:56.9988, lng:-7.4622, icon:"🪨", title:"Dùn Bharpa", gaelic:"Dùn Bharpa",
     desc:"A large Neolithic chambered burial cairn on the moor near Borve, ringed by tall standing stones — one of Barra's most impressive ancient monuments.",
     fact:"It is more than 5,000 years old, older than the Egyptian pyramids.", motif:"🪨" },
 
-  { x:456, y:512, icon:"🏖️", title:"Halaman Bay & West Beaches", gaelic:"Tràigh Tangasdal",
+  { lat:56.9523, lng:-7.5038, icon:"🏖️", title:"Halaman Bay & West Beaches", gaelic:"Tràigh Tangasdal",
     desc:"A sweeping arc of white shell-sand on the Atlantic coast near Tangasdale, backed by flower-rich machair grassland. Sunsets here are spectacular.",
     fact:"Barra's pale sand is made from crushed sea shells, not rock.", motif:"🏖️" },
 
-  { x:648, y:892, icon:"🏝️", title:"Isle of Vatersay", gaelic:"Bhatarsaigh",
+  { lat:56.9378, lng:-7.5405, icon:"🏝️", title:"Isle of Vatersay", gaelic:"Bhatarsaigh",
     desc:"Barra's southern neighbour, reached by a causeway built in 1991. It is famous for its twin white-sand beaches lying back to back across a narrow isthmus.",
     fact:"A memorial recalls the 1853 wreck of the emigrant ship Annie Jane off the island.", motif:"🏝️" },
 
   /* ----- Hotels ----- */
-  { x:868, y:710, type:"hotel", icon:"🛏️", title:"Castlebay Hotel",
+  { lat:56.9562, lng:-7.4862, type:"hotel", icon:"🛏️", title:"Castlebay Hotel",
     desc:"A traditional harbourfront hotel in the heart of Castlebay, looking out across the bay to Kisimul Castle.",
     fact:"Castlebay is the island's main village and the arrival point for the ferry from Oban." },
-  { x:702, y:726, type:"hotel", icon:"🛏️", title:"Craigard Hotel",
+  { lat:56.9573, lng:-7.4878, type:"hotel", icon:"🛏️", title:"Craigard Hotel",
     desc:"A small, friendly hotel in Castlebay, a short stroll from the ferry pier and the village shops.",
     fact:"It stands just above the harbour where the Oban ferry ties up." },
-  { x:1006, y:466, type:"hotel", icon:"🛏️", title:"Heathbank Hotel",
+  { lat:56.9979, lng:-7.4158, type:"hotel", icon:"🛏️", title:"Heathbank Hotel",
     desc:"A welcoming hotel at Northbay on Barra's east side, handy for the Ardmhor ferry and the island's beaches.",
     fact:"Northbay is a sheltered bay looking out towards the Sound of Barra." },
-  { x:470, y:560, type:"hotel", icon:"🛏️", title:"Isle of Barra Beach Hotel",
+  { lat:56.9510, lng:-7.5052, type:"hotel", icon:"🛏️", title:"Isle of Barra Beach Hotel",
     desc:"Wrapped around Tangasdale Beach on Halaman Bay, with sea-view rooms looking out over the Atlantic.",
     fact:"Guests can watch gannets diving and otters on the shore right from the hotel." },
 
   /* ----- Campsites ----- */
-  { x:760, y:130, type:"camp", icon:"⛺", title:"Croft No. 2 Campsite",
+  { lat:57.0448, lng:-7.4058, type:"camp", icon:"⛺", title:"Croft No. 2 Campsite",
     desc:"A quiet caravan and campsite at Scurrival Point, Eoligarry — a short walk from the mile-long white sands of Tràigh Scurrival.",
     fact:"It sits at the very north of Barra, beyond the airport beach." },
-  { x:886, y:152, type:"camp", icon:"⛺", title:"Scurrival Campsite",
+  { lat:57.0401, lng:-7.4016, type:"camp", icon:"⛺", title:"Scurrival Campsite",
     desc:"A laid-back, semi-wild campsite in Eoligarry, with modern facilities housed in a renovated island home.",
     fact:"Eoligarry lies on the sandy northern peninsula of the island." },
-  { x:498, y:448, type:"camp", icon:"⛺", title:"Wavecrest Campsite, Borve",
+  { lat:57.0012, lng:-7.4772, type:"camp", icon:"⛺", title:"Wavecrest Campsite, Borve",
     desc:"A west-coast campsite at Borve with showers, hook-ups and a small kitchen, close to the open Atlantic beaches.",
     fact:"Borve's shores face the full sweep of the Atlantic Ocean." },
-  { x:708, y:872, type:"camp", icon:"⛺", title:"Vatersay Camping",
+  { lat:56.9335, lng:-7.5338, type:"camp", icon:"⛺", title:"Vatersay Camping",
     desc:"Informal camping and campervan pitches on the machair beside Vatersay's beautiful twin beaches.",
     fact:"Vatersay is reached from Barra by a causeway built in 1991." }
 ];
@@ -493,9 +369,38 @@ function plate(p){
    ============================================================ */
 const world = document.getElementById("world");
 const viewport = document.getElementById("viewport");
-const MAP_W = 1600, MAP_H = 1000;
+
+/* ---- real OpenStreetMap (CARTO Voyager) basemap, zoom 13 ----
+   The downloaded tiles span x 3924..3927, y 2507..2512 at zoom 13.
+   Markers are placed by their true latitude/longitude, projected into
+   this same tile grid, so every position is geographically accurate. */
+const TZ = 13, TX0 = 3924, TX1 = 3927, TY0 = 2507, TY1 = 2512;
+const TN = Math.pow(2, TZ);                 // tiles per axis at this zoom
+const MAP_W = (TX1-TX0+1)*256, MAP_H = (TY1-TY0+1)*256;  // 1024 x 1536
+
+// lon/lat -> pixel in the map grid (standard Web-Mercator / slippy-map maths)
+function project(lat, lon){
+  const x = (lon + 180) / 360 * TN;
+  const s = Math.sin(lat * Math.PI/180);
+  const y = (0.5 - Math.log((1+s)/(1-s)) / (4*Math.PI)) * TN;
+  return { x: (x - TX0)*256, y: (y - TY0)*256 };
+}
+
+// lay the basemap tiles into #world
+for(let tx2=TX0; tx2<=TX1; tx2++){
+  for(let ty2=TY0; ty2<=TY1; ty2++){
+    const img = document.createElement("img");
+    img.className = "tile";
+    img.src = `tiles/${tx2}_${ty2}.png`;
+    img.draggable = false;
+    img.style.left = ((tx2-TX0)*256) + "px";
+    img.style.top  = ((ty2-TY0)*256) + "px";
+    world.appendChild(img);
+  }
+}
+
 let scale = 1, tx = 0, ty = 0;
-const MIN = 0.5, MAX = 3.5;
+const MIN = 0.45, MAX = 3.2;
 
 function apply(){
   world.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
@@ -625,7 +530,8 @@ function selectMarker(b){
 POIS.forEach((p, i)=>{
   const b = document.createElement("button");
   b.className = "poi bounce" + (p.here ? " here" : "") + (p.type ? " "+p.type : "");
-  b.style.left = p.x+"px"; b.style.top = p.y+"px";
+  const pos = project(p.lat, p.lng);
+  b.style.left = pos.x+"px"; b.style.top = pos.y+"px";
   b.style.animationDelay = (i*0.12)+"s";
   b.innerHTML = `<span class="mk"><span class="pin">${glyph(ICON_FOR[p.title])}</span><span class="lbl">${p.title}</span></span>`;
   b.addEventListener("click", ev=>{ if(moved) return; selectMarker(b); openPanel(p); });
