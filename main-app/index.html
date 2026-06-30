@@ -861,9 +861,17 @@ window.exhibitPlate = exhibitPlate;
   }
   // Bind directly to each control AND accept touch — robust on iOS Safari.
   function bindTap(el, fn){
-    let handled = false;
+    let handled = false, sx = 0, sy = 0, moved = false;
+    el.addEventListener("touchstart", e => {
+      const t = e.touches[0]; sx = t.clientX; sy = t.clientY; moved = false;
+    }, {passive:true});
+    el.addEventListener("touchmove", e => {
+      const t = e.touches[0];
+      if (Math.abs(t.clientX - sx) + Math.abs(t.clientY - sy) > 12) moved = true; // a scroll, not a tap
+    }, {passive:true});
     el.addEventListener("touchend", e => {
-      if (e.cancelable) e.preventDefault();   // suppress the 300ms ghost click
+      if (moved) return;                      // finger moved → it was a scroll; don't fire
+      if (e.cancelable) e.preventDefault();   // genuine tap → suppress the 300ms ghost click
       handled = true;
       fn(e);
       setTimeout(() => { handled = false; }, 600);
