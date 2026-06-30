@@ -1068,23 +1068,14 @@ window.exhibitPlate = exhibitPlate;
       this.updateBasket();
       this.els.boat.classList.remove("ready");
       this.hauls++;
-      this.setWeather(this.hauls);   // each haul changes the weather: 1 rain, 2 clearing, 3 sunny
+      this.setWeather(this.hauls);   // each haul still changes the weather
       confettiBurst();
-      if(this.hauls >= 3){
-        // third haul — the sun comes out: well done!
-        this.finished = true;
-        this.els.celEmoji.textContent = "🌈";
-        this.els.celTitle.textContent = "Sgoinneil! Well done!";
-        this.els.celText.innerHTML = `You landed <b>three fine catches</b> — ${this.total} herring — and the sun's out at last! ☀️`;
-        this.els.celAgain.textContent = "Play again 🎣";
-      } else {
-        // refill the net with a fresh shoal for the next catch
-        for(let i=0;i<this.goal;i++) this.spawnFish();
-        this.els.celEmoji.textContent = ["🎉","🐟","⭐","🎣","🛟"][Math.floor(rand()*5)];
-        this.els.celTitle.textContent = nextPraise();
-        this.els.celText.innerHTML = nextFact();
-        this.els.celAgain.textContent = "Catch more! 🎣";
-      }
+      // endless play — refill the net and show praise + a fact every haul
+      for(let i=0;i<this.goal;i++) this.spawnFish();
+      this.els.celEmoji.textContent = ["🎉","🐟","⭐","🎣","🛟"][Math.floor(rand()*5)];
+      this.els.celTitle.textContent = nextPraise();
+      this.els.celText.innerHTML = nextFact();
+      this.els.celAgain.textContent = "Catch more! 🎣";
       this.els.cel.classList.add("show");
     }
   };
