@@ -307,22 +307,23 @@ body.screen-home #frame{display:block;}
 /* ---------- phones / small screens: shrink to fit (scroll only if needed) ---------- */
 @media (max-width: 740px), (max-height: 620px){
   html,body{overflow-x:hidden;}
+  #frame{display:none !important;}   /* hide the decorative knot frame on phones — it covers the buttons */
   .topbar{height:56px;padding:0 12px;}
   .topbar .title{flex:1;min-width:0;text-align:center;white-space:nowrap;overflow:hidden;
     text-overflow:ellipsis;font-size:16px;letter-spacing:.5px;margin:0 6px;}
   .home-btn{font-size:15px;padding:9px 14px;flex:none;}
   .icon-btn{width:46px;height:46px;font-size:22px;flex:none;}
 
-  .home-wrap{justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 30px 30px;}
-  .home-crest{gap:8px;max-width:90vw;}
+  .home-wrap{justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 28px;}
+  .home-crest{gap:8px;max-width:96vw;}
   .home-crest .knot{width:24px;height:24px;flex:none;}
-  .home-title{font-size:clamp(19px,5vw,40px);min-width:0;}
-  .home-sub{margin:4px 0 12px;font-size:clamp(13px,3.2vw,20px);max-width:88vw;}
-  .flag-banner{margin-bottom:14px;padding:6px 12px;gap:9px;max-width:88vw;}
+  .home-title{font-size:clamp(20px,5.6vw,40px);min-width:0;}
+  .home-sub{margin:4px 0 12px;font-size:clamp(13px,3.4vw,20px);max-width:96vw;}
+  .flag-banner{margin-bottom:14px;padding:6px 14px;gap:10px;max-width:96vw;}
   .flag-banner span{font-size:14px;}
-  .barra-flag{width:42px;height:26px;}
-  .card-row{flex-direction:column;gap:12px;max-width:88vw;align-items:center;}
-  .menu-card{width:min(86vw,420px);min-width:0;padding:13px 20px 15px;outline-offset:-6px;}
+  .barra-flag{width:44px;height:27px;}
+  .card-row{flex-direction:column;gap:12px;max-width:100%;width:100%;align-items:center;}
+  .menu-card{width:min(94vw,440px);min-width:0;padding:14px 22px 16px;outline-offset:-6px;}
   .menu-card .emoji{margin-bottom:2px;}
   .menu-card .emoji svg{width:auto;height:46px;}
   .menu-card h2{font-size:21px;letter-spacing:.8px;}
