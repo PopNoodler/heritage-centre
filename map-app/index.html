@@ -579,6 +579,13 @@ viewport.addEventListener("pointerup", e=>{
   lastTap = now;
 });
 
+// tapping the map away from a marker hides the open info panel
+viewport.addEventListener("click", e=>{
+  if(moved) return;                      // a drag, not a tap
+  if(e.target.closest(".poi")) return;   // tapped a marker — its own handler opens the panel
+  closePanel();
+});
+
 /* ---- bronze "engraved" icon set (matches the antique chart theme) ---- */
 function glyph(name){
   const D="#6e4a16", C="#f4ead0";
