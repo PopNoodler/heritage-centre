@@ -1163,13 +1163,21 @@ window.exhibitPlate = exhibitPlate;
   };
 
   /* ---------- kiosk idle reset ---------- */
-  const IDLE_MS = 90000;
+  // AFK / idle timer: after this long with no interaction, return to the HOME
+  // (main) screen so the station is always ready for the next visitor.
+  const AFK_MS = 90000;   // 90 seconds — change this to adjust the timeout
   let idleTimer = null;
+  function goHome(){
+    Gallery.close();                                                  // close the gallery lightbox
+    document.getElementById("celebrate").classList.remove("show");    // close the herring-game card
+    document.getElementById("buildCel").classList.remove("show");     // close the blackhouse card
+    show("home");                                                     // back to the 3-card main screen
+  }
   function resetIdle(){
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(()=>{ Gallery.close(); show("home"); }, IDLE_MS);
+    idleTimer = setTimeout(goHome, AFK_MS);
   }
-  ["pointerdown","touchstart","keydown"].forEach(ev=>
+  ["pointerdown","pointermove","touchstart","keydown"].forEach(ev=>
     document.addEventListener(ev, resetIdle, {passive:true}));
 
   /* ============================================================
