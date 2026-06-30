@@ -59,18 +59,21 @@ button{font-family:inherit;cursor:pointer;border:none;}
 #world>svg{position:absolute;inset:0;width:1600px;height:1000px;}
 
 /* ---------- POI markers: carved-stone medallions ---------- */
-.poi{position:absolute;transform:translate(-50%,-100%);z-index:6;
-  display:flex;flex-direction:column;align-items:center;background:none;}
+.poi{position:absolute;transform:translate(-50%,-100%);z-index:6;background:none;}
 .poi.sel{z-index:12;}
-.poi .pin{position:relative;width:46px;height:46px;border-radius:50%;
+/* inner wrapper counter-scales (1/zoom) so markers keep a constant SCREEN size —
+   zooming in then spreads them apart instead of magnifying them */
+.poi .mk{display:flex;flex-direction:column;align-items:center;
+  transform:scale(var(--mk,1));transform-origin:50% 100%;}
+.poi .pin{position:relative;width:42px;height:42px;border-radius:50%;
   background:radial-gradient(circle at 38% 34%, #fbf3dc, var(--parch2));
   border:3px solid var(--bronze);
   box-shadow:0 0 0 3px var(--parch), 0 0 0 4px var(--bronze-dk), 0 5px 10px var(--shadow);
   display:flex;align-items:center;justify-content:center;}
-.poi .pin span{font-size:24px;line-height:1;}
-.poi .pin .ic{width:28px;height:28px;display:block;}
-.poi .pin::after{content:"";position:absolute;bottom:-10px;left:50%;
-  width:12px;height:12px;background:var(--bronze);transform:translateX(-50%) rotate(45deg);
+.poi .pin span{font-size:22px;line-height:1;}
+.poi .pin .ic{width:26px;height:26px;display:block;}
+.poi .pin::after{content:"";position:absolute;bottom:-9px;left:50%;
+  width:11px;height:11px;background:var(--bronze);transform:translateX(-50%) rotate(45deg);
   box-shadow:0 0 0 3px var(--parch);border-radius:0 0 3px 0;}
 /* labels are hidden in the overview and appear when you zoom in, or for the marker you tap */
 .poi .lbl{margin-top:12px;background:linear-gradient(180deg,var(--parch),var(--parch2));
@@ -496,7 +499,8 @@ const MIN = 0.5, MAX = 3.5;
 
 function apply(){
   world.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
-  world.classList.toggle("labels", scale >= 1.15);  // names appear as you zoom in
+  world.style.setProperty("--mk", (1/scale).toFixed(3));  // keep markers a constant screen size
+  world.classList.toggle("labels", scale >= 1.6);          // names appear once zoomed in & spread out
 }
 
 function clamp(){
@@ -616,7 +620,7 @@ POIS.forEach((p, i)=>{
   b.className = "poi bounce" + (p.here ? " here" : "") + (p.type ? " "+p.type : "");
   b.style.left = p.x+"px"; b.style.top = p.y+"px";
   b.style.animationDelay = (i*0.12)+"s";
-  b.innerHTML = `<span class="pin">${glyph(ICON_FOR[p.title])}</span><span class="lbl">${p.title}</span>`;
+  b.innerHTML = `<span class="mk"><span class="pin">${glyph(ICON_FOR[p.title])}</span><span class="lbl">${p.title}</span></span>`;
   b.addEventListener("click", ev=>{ if(moved) return; selectMarker(b); openPanel(p); });
   world.appendChild(b);
 });
