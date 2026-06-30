@@ -233,12 +233,12 @@ button{font-family:inherit;cursor:pointer;border:none;}
    ============================================================ */
 #build{background:linear-gradient(180deg,#c4d2d2 0%, #aebfbb 38%, #8fa68f 100%);}
 .build-stage{position:absolute;inset:66px 0 0 0;display:flex;flex-direction:column;align-items:center;
-  padding:6px 16px calc(104px + env(safe-area-inset-bottom));}
+  padding:6px 16px calc(18px + env(safe-area-inset-bottom));}
 .build-progress{display:flex;gap:10px;margin:4px 0 2px;}
 .build-progress .dot{width:14px;height:14px;border-radius:50%;
   background:rgba(251,245,230,.55);border:2px solid var(--bronze);transition:background .3s;}
 .build-progress .dot.done{background:var(--bronze);}
-.build-house{width:min(78vw,600px);max-height:54vh;flex:0 1 auto;
+.build-house{width:min(72vw,560px);max-height:46vh;flex:0 1 auto;
   filter:drop-shadow(0 8px 14px rgba(0,0,0,.25));}
 .build-layer{opacity:0;transform:translateY(12px);transition:opacity .5s ease, transform .5s ease;}
 .build-layer.on{opacity:1;transform:none;}
@@ -246,17 +246,24 @@ button{font-family:inherit;cursor:pointer;border:none;}
 @keyframes smoke{from{stroke-dashoffset:0;}to{stroke-dashoffset:-180;}}
 .fire-glow{transform-origin:center;animation:flick 1.2s ease-in-out infinite;}
 @keyframes flick{0%,100%{opacity:.5;}50%{opacity:.9;}}
-.build-fact{margin-top:12px;max-width:min(90vw,680px);text-align:center;
+.build-fact{margin-top:10px;max-width:min(90vw,680px);text-align:center;
   background:linear-gradient(180deg,var(--parch),var(--parch2));color:var(--ink);
-  font-size:clamp(16px,2.2vw,20px);line-height:1.4;padding:12px 22px;border-radius:14px;
+  font-size:clamp(15px,2.1vw,19px);line-height:1.4;padding:11px 22px;border-radius:14px;
   border:2px solid var(--bronze);box-shadow:0 5px 12px var(--shadow);}
 .build-fact b{color:var(--celtic-red);}
-.build-btn{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom));left:50%;
-  transform:translateX(-50%);background:linear-gradient(180deg,var(--bronze-lt),var(--bronze));
-  color:#fff;font-size:23px;font-weight:800;padding:15px 38px;border-radius:50px;
-  border:2.5px solid var(--bronze-dk);box-shadow:0 6px 14px var(--shadow);
-  display:flex;align-items:center;gap:10px;animation:bob 1.4s ease-in-out infinite;}
-.build-btn:active{transform:translateX(-50%) scale(.96);}
+/* draggable build pieces */
+.build-tray{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px;}
+.tray-label{background:linear-gradient(180deg,var(--parch),var(--parch2));color:var(--bronze-dk);
+  font-weight:700;font-size:clamp(15px,2vw,19px);padding:7px 18px;border-radius:30px;
+  border:2px solid var(--bronze);box-shadow:0 3px 8px var(--shadow);}
+.piece{width:88px;height:88px;touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none;
+  filter:drop-shadow(0 5px 7px rgba(0,0,0,.32));animation:piecehop 1.6s ease-in-out infinite;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);}
+.piece svg{width:100%;height:100%;pointer-events:none;}
+.piece.dragging{cursor:grabbing;z-index:200;animation:none;transition:none;}
+@keyframes piecehop{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+/* the house glows as a drop target while dragging */
+.build-house.drop-ready{filter:drop-shadow(0 0 0 rgba(0,0,0,.25)) drop-shadow(0 0 14px rgba(224,189,111,.95));}
 
 /* ============================================================
    GALLERY
@@ -454,8 +461,11 @@ body.screen-home #frame{display:block;}
         </g>
       </g>
     </svg>
-    <div class="build-fact" id="buildFact">A blackhouse — <b>taigh-dubh</b> — is an old Barra home. Tap the button to build one, step by step!</div>
-    <button class="build-btn" id="buildBtn">Build the stone walls →</button>
+    <div class="build-fact" id="buildFact">Drag each piece onto the house to build a <b>taigh-dubh</b> — an old Barra home!</div>
+    <div class="build-tray" id="buildTray">
+      <div class="tray-label" id="trayLabel">Drag the stones onto the house ↑</div>
+      <div class="piece" id="buildPiece" role="button" aria-label="Building piece — drag onto the house"></div>
+    </div>
   </div>
   <div class="celebrate" id="buildCel">
     <div class="celebrate-card">
@@ -1175,43 +1185,85 @@ window.exhibitPlate = exhibitPlate;
      BUILD A BLACKHOUSE (taigh-dubh) — step-by-step, with real facts
      ============================================================ */
   const Build = {
-    i:0, dots:[],
+    i:0, dots:[], dragging:false, sx:0, sy:0,
     steps:[
-      { layer:"l-walls",  next:"Raise the roof frame →",
+      { layer:"l-walls",  piece:"stones", label:"Drag the stones onto the house ↑",
         fact:"A blackhouse — <b>taigh-dubh</b> — had double walls of dry beach stone packed with earth, up to 1.5 m thick. The corners were rounded to beat the Atlantic wind." },
-      { layer:"l-frame",  next:"Thatch the roof →",
+      { layer:"l-frame",  piece:"timber", label:"Drag the roof timbers up ↑",
         fact:"Wood was scarce on Barra, so the curved roof timbers — the <b>crucks</b> — were precious, often shaped from driftwood washed up on the shore." },
-      { layer:"l-thatch", next:"Rope it down →",
+      { layer:"l-thatch", piece:"thatch", label:"Drag the thatch onto the roof ↑",
         fact:"The roof was <b>thatched</b> with heather, straw or reeds, laid on the inner edge of the wall so the rain soaked into the earth core." },
-      { layer:"l-ropes",  next:"Light the peat fire →",
+      { layer:"l-ropes",  piece:"rope",   label:"Drag the ropes over the thatch ↑",
         fact:"To stand up to the gales, the thatch was lashed with <b>heather ropes</b> and weighed down with heavy hanging stones." },
-      { layer:"l-fire",   next:"Bring the family in →",
+      { layer:"l-fire",   piece:"fire",   label:"Drag the peat fire inside ↑",
         fact:"A <b>peat fire</b> burned in the middle of the floor day and night. With no chimney, smoke seeped through the thatch — that soot is why it's a ‘black’ house!" },
-      { layer:"l-folk",   next:"Finish the house ✓",
+      { layer:"l-folk",   piece:"cow",    label:"Drag the family & cow home ↑",
         fact:"The family lived at one end and their <b>cattle</b> at the other, under one roof — the byre kept everyone warm through the long winter." }
     ],
+    pieceSVG(name){
+      const ic = {
+        stones:`<g stroke="#6f6a60" stroke-width="2"><ellipse cx="20" cy="46" rx="16" ry="11" fill="#9c968b"/><ellipse cx="44" cy="48" rx="15" ry="10" fill="#8f897e"/><ellipse cx="32" cy="34" rx="15" ry="11" fill="#a8a297"/><ellipse cx="30" cy="22" rx="11" ry="8" fill="#9c968b"/></g>`,
+        timber:`<g stroke="#6e4a16" stroke-width="7" stroke-linecap="round" fill="none"><path d="M14 52 L32 16"/><path d="M50 52 L32 16"/><path d="M20 40 H44"/></g>`,
+        thatch:`<ellipse cx="32" cy="42" rx="22" ry="13" fill="#b8843f" stroke="#7c531a" stroke-width="2"/><g stroke="#996931" stroke-width="2" stroke-linecap="round"><path d="M14 38 10 18M22 34 20 14M32 32 32 12M42 34 44 14M50 38 54 18"/></g><path d="M10 18 Q32 9 54 18" stroke="#7c531a" stroke-width="2" fill="none"/>`,
+        rope:`<g fill="none" stroke="#7c5a2e" stroke-width="4"><circle cx="26" cy="28" r="16"/><circle cx="26" cy="28" r="9"/></g><circle cx="48" cy="48" r="9" fill="#8a857a" stroke="#5a554c" stroke-width="2"/>`,
+        fire:`<rect x="17" y="42" width="30" height="11" rx="2" fill="#5a4632"/><rect x="20" y="38" width="11" height="6" rx="1" fill="#6e5642"/><rect x="34" y="38" width="11" height="6" rx="1" fill="#6e5642"/><path d="M32 38 q-9 -8 -2 -20 q6 7 4 13 q5 -4 4 -11 q7 11 -2 18 Z" fill="#ff9a3c"/><path d="M32 36 q-3 -5 0 -11 q4 5 0 11 Z" fill="#ffd45a"/>`,
+        cow:`<g transform="translate(30,32) scale(0.92)"><ellipse cx="0" cy="6" rx="22" ry="13" fill="#b5712e"/><rect x="-16" y="14" width="5" height="14" fill="#7c4a1e"/><rect x="-4" y="15" width="5" height="13" fill="#7c4a1e"/><rect x="7" y="15" width="5" height="13" fill="#7c4a1e"/><rect x="15" y="14" width="5" height="14" fill="#7c4a1e"/><ellipse cx="20" cy="0" rx="11" ry="10" fill="#c07e36"/><path d="M11 -7 q-6 -7 -2 -12M30 -7 q6 -7 2 -12" stroke="#e8e2d2" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M14 -4 q6 8 13 0 q-2 7 -6 7 q-5 0 -7 -7 Z" fill="#caa56a"/><circle cx="18" cy="2" r="1.6" fill="#2a201c"/></g>`
+      };
+      return `<svg viewBox="0 0 64 64" aria-hidden="true">${ic[name]||ic.stones}</svg>`;
+    },
     init(){
       this.house = document.getElementById("buildHouse");
       this.fact = document.getElementById("buildFact");
-      this.btn = document.getElementById("buildBtn");
+      this.tray = document.getElementById("buildTray");
+      this.piece = document.getElementById("buildPiece");
+      this.label = document.getElementById("trayLabel");
       this.cel = document.getElementById("buildCel");
       const wrap = document.getElementById("buildDots");
       for(let k=0;k<this.steps.length;k++){ const d=document.createElement("span"); d.className="dot"; wrap.appendChild(d); this.dots.push(d); }
-      bindTap(this.btn, ()=>this.tap());
-      bindTap(this.house, ()=>this.tap());
       bindTap(document.getElementById("buildAgain"), ()=>{ this.cel.classList.remove("show"); this.reset(); });
+      // drag the current piece onto the house
+      this.piece.addEventListener("pointerdown", e=>{
+        if(this.i >= this.steps.length) return;
+        this.dragging = true; this.sx = e.clientX; this.sy = e.clientY;
+        try{ this.piece.setPointerCapture(e.pointerId); }catch(_){}
+        this.piece.classList.add("dragging");
+        this.house.classList.add("drop-ready");
+        resetIdle();
+      });
+      this.piece.addEventListener("pointermove", e=>{
+        if(!this.dragging) return;
+        this.piece.style.transform = `translate(${e.clientX-this.sx}px,${e.clientY-this.sy}px)`;
+      });
+      const end = e=>{
+        if(!this.dragging) return;
+        this.dragging = false;
+        this.piece.classList.remove("dragging");
+        this.house.classList.remove("drop-ready");
+        const r = this.house.getBoundingClientRect(), pad = 30;
+        const hit = e.clientX>r.left-pad && e.clientX<r.right+pad && e.clientY>r.top-pad && e.clientY<r.bottom+pad;
+        if(hit) this.place(); else this.piece.style.transform = "";  // snap back
+      };
+      this.piece.addEventListener("pointerup", end);
+      this.piece.addEventListener("pointercancel", e=>{ this.dragging=false; this.piece.classList.remove("dragging"); this.house.classList.remove("drop-ready"); this.piece.style.transform=""; });
     },
     start(){ this.reset(); },
     reset(){
-      this.i = 0;
+      this.i = 0; this.dragging = false;
       this.steps.forEach(s=>document.getElementById(s.layer).classList.remove("on"));
       this.dots.forEach(d=>d.classList.remove("done"));
-      this.fact.innerHTML = "A blackhouse — <b>taigh-dubh</b> — is an old Barra home. Tap to build one, step by step!";
-      this.btn.textContent = "Build the stone walls →";
-      this.btn.style.display = "flex";
+      this.fact.innerHTML = "Drag each piece onto the house to build a <b>taigh-dubh</b> — an old Barra home!";
       this.cel.classList.remove("show");
+      this.showPiece();
     },
-    tap(){
+    showPiece(){
+      if(this.i >= this.steps.length){ this.tray.style.display = "none"; return; }
+      const s = this.steps[this.i];
+      this.piece.innerHTML = this.pieceSVG(s.piece);
+      this.piece.style.transform = "";
+      this.label.textContent = s.label;
+      this.tray.style.display = "flex";
+    },
+    place(){
       if(this.i >= this.steps.length) return;
       const s = this.steps[this.i];
       document.getElementById(s.layer).classList.add("on");
@@ -1221,11 +1273,11 @@ window.exhibitPlate = exhibitPlate;
       this.i++;
       resetIdle();
       if(this.i < this.steps.length){
-        this.btn.textContent = s.next;
+        setTimeout(()=>this.showPiece(), 260);
       } else {
-        this.btn.style.display = "none";
+        this.tray.style.display = "none";
         Sound.win();
-        setTimeout(()=>this.cel.classList.add("show"), 800);
+        setTimeout(()=>this.cel.classList.add("show"), 700);
       }
     }
   };
