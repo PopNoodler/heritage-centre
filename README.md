@@ -13,23 +13,30 @@ Software delivery for the Heritage Centre interactive tablet stations described 
 
 Plus full setup & launch documentation in `docs/`.
 
-### 1. Main Interactive App — `main-app/index.html`
-- **Children's historical fishing game** (ages 4–8): tap the fish swimming in the net
-  to drop them into your basket, then send the boat to the **pier** when it's full.
-  Fail-free, colourful, with gentle sounds, praise and "did you know?" heritage facts.
-- **Exhibit gallery**: a grid of exhibits with a full-screen viewer and descriptions.
-- Big home screen to switch between the two; touch-friendly, optimised for 10.1″.
+### 1. Main Interactive App — `main-app/index.html`  (three stations in one)
+- **Herring Game** (ages 4–8): tap the silver herring swimming in the net to fill your
+  creel, then take the catch to the **pier**. The weather turns from overcast → rain →
+  sunshine with each haul, ending in a "Well done!" after the third. Fail-free, with
+  gentle sounds, Gaelic praise and Barra "did you know?" facts.
+- **Build a Blackhouse** (*Tog Taigh-dubh*): tap to build an old Barra blackhouse step by
+  step — drystone walls, cruck frame, thatch, ropes & weight-stones, the peat fire, and
+  the family & Highland cow — each step teaching a real fact about island building.
+- **Exhibit Gallery**: a grid of exhibits (based on the real Dualchas centre) with a
+  full-screen viewer and descriptions.
+- Big home screen to switch between the three; touch-friendly, optimised for 10.1″.
 
 ### 2. Interactive Island Map — `map-app/index.html`
-- A **top-down map of the Isle of Barra & Vatersay** (Outer Hebrides), drawn to be
-  recognisable: the Eoligarry peninsula to the north, the Tràigh Mhòr airport beach,
-  Castlebay in the south, Heaval's high ground, and Vatersay across its causeway.
-- Zoomable, pannable (drag, pinch, +/− buttons, double-tap, reset) with a compass rose.
-- **Real points of interest** — Kisimul Castle, Castlebay, Dualchas Heritage Centre
-  ("you are here"), Heaval, Barra Airport, Cille Bharra, Ardmhor ferry, Northbay,
-  Dùn Bharpa, the west-coast beaches and Vatersay — each with Gaelic name, description
-  and a "did you know?" fact.
-- Designed for the larger 13″ screen.
+- A **real top-down map of the Isle of Barra & Vatersay** built from OpenStreetMap
+  (CARTO) tiles, tinted to look like an **antique sepia chart** — true coastline, roads
+  and place names, bundled **offline** in `map-app/tiles/`.
+- Every marker is placed by its **true latitude/longitude**. Zoomable & pannable (drag,
+  pinch, +/− buttons, double-tap, reset) with a compass rose; markers stay a constant
+  size and reveal their names as you zoom in; tap a marker for its story, tap the sea to
+  close it.
+- **Real points of interest** — Kisimul Castle, Castlebay, Dualchas, Heaval, Barra
+  Airport, Cille Bharra, Ardmhor ferry, Northbay, Dùn Bharpa, the west beaches and
+  Vatersay — **plus the island's hotels and campsites** (blue bed/tent markers).
+- Credit: © OpenStreetMap contributors · © CARTO. Designed for the larger 13″ screen.
 
 ## Design notes
 - **Celtic / Hebridean visual identity** across all three stations: a parchment-and-bronze

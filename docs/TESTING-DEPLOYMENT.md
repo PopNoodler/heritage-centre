@@ -7,16 +7,22 @@ for public use before the stations go live.
 
 ### Main Interactive App (`main-app/index.html`)
 **Home**
-- [ ] Both station cards appear and gently pulse.
+- [ ] All three station cards appear and gently pulse.
 - [ ] Tapping a card opens the right station; **🏠 Home** returns.
 
-**Fishing Game**
-- [ ] Fish swim inside the net and react to taps.
-- [ ] Tapping a fish flies it to the basket; the counter and progress bar rise.
-- [ ] New fish keep appearing — the net never empties.
-- [ ] When the basket hits 6, the **🚤 Take to the Pier!** button lights up and bobs.
-- [ ] Tapping it shows confetti + a praise/fun-fact card and adds to the ⭐ score.
-- [ ] The 🔊 button mutes/unmutes sound.
+**Herring Game**
+- [ ] Silver herring swim inside the net and react to taps (facing their direction).
+- [ ] Tapping a herring flies it to the creel; counter and progress bar rise.
+- [ ] The net **empties as you catch** and does not refill until taken to the pier.
+- [ ] When the net is cleared, **Take to the Pier!** lights up; tapping it shows
+      confetti + a Barra fact, advances the ⭐ score, and **changes the weather**.
+- [ ] Weather goes overcast → rain → sunshine; the **3rd haul** shows "Well done!".
+- [ ] Facts don't repeat until all have been shown. The 🔊 button mutes/unmutes.
+
+**Build a Blackhouse**
+- [ ] Tapping the button (or the house) adds each part in turn: walls → frame →
+      thatch → ropes → fire → family/cow, with a real fact and a filled progress dot.
+- [ ] After the last step a "Sgoinneil! Well done!" card appears; **Build again** resets.
 
 **Exhibit Gallery**
 - [ ] All exhibits show as cards with titles.
@@ -24,12 +30,14 @@ for public use before the stations go live.
 - [ ] ‹ / › move between exhibits; ✕ closes.
 
 ### Interactive Island Map (`map-app/index.html`)
-- [ ] Map fits the screen on load and is centred.
-- [ ] Drag pans the map; **+ / −** and pinch zoom; **⤢** resets the view.
-- [ ] Every 📍 marker is tappable and opens its info panel with a "Did you know?".
-- [ ] ✕ closes the panel; double-tap zooms in.
+- [ ] The real Barra basemap loads (sepia antique chart) and fits the screen.
+- [ ] Drag pans; **+ / −** and pinch zoom; **⤢** resets; double-tap zooms in.
+- [ ] Markers stay a constant size; names appear once zoomed in.
+- [ ] Every marker is tappable and opens its info panel with a "Did you know?".
+- [ ] ✕ — or tapping the sea away from a marker — closes the panel.
+- [ ] Heritage places (bronze) and hotels/campsites (blue) are both present.
 
-### Kiosk behaviour (both apps)
+### Kiosk behaviour (all apps)
 - [ ] After ~90 s untouched, the app returns to its home/overview by itself.
 - [ ] No way to leave the app: back button, nav bar and gestures do nothing
       (verify after kiosk lockdown — see KIOSK-SETUP.md).
