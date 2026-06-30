@@ -53,10 +53,18 @@ button{font-family:inherit;cursor:pointer;border:none;}
 
 /* ---------- map viewport ---------- */
 #viewport{position:absolute;inset:0;overflow:hidden;
-  background:#aad6e4;cursor:grab;}  /* matches the CARTO sea so the map blends into the surround */
+  background:#dccba0;cursor:grab;}  /* aged-paper surround so the sepia map blends in */
 #viewport.dragging{cursor:grabbing;}
 #world{position:absolute;top:0;left:0;width:1024px;height:1536px;transform-origin:0 0;will-change:transform;}
-#world .tile{position:absolute;width:256px;height:256px;pointer-events:none;}
+/* tint the real map tiles into a warm sepia "old chart" */
+#world .tile{position:absolute;width:256px;height:256px;pointer-events:none;
+  filter:sepia(.62) saturate(1.55) hue-rotate(-9deg) brightness(1.06) contrast(.9);}
+/* faint parchment wash + grid to age the chart */
+#world .paper{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;
+  background:
+    repeating-linear-gradient(0deg,rgba(120,86,32,.06) 0 1px,transparent 1px 96px),
+    repeating-linear-gradient(90deg,rgba(120,86,32,.06) 0 1px,transparent 1px 96px),
+    radial-gradient(120% 90% at 50% 40%, rgba(220,203,160,.0), rgba(150,120,70,.22));}
 .osm-credit{position:absolute;left:8px;bottom:6px;z-index:30;font:11px Georgia,serif;
   color:#3b4a52;background:rgba(251,245,230,.8);padding:2px 7px;border-radius:4px;pointer-events:none;}
 
@@ -398,6 +406,9 @@ for(let tx2=TX0; tx2<=TX1; tx2++){
     world.appendChild(img);
   }
 }
+const paperOverlay = document.createElement("div");
+paperOverlay.className = "paper";
+world.appendChild(paperOverlay);
 
 let scale = 1, tx = 0, ty = 0;
 const MIN = 0.45, MAX = 3.2;
