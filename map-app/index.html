@@ -146,6 +146,45 @@ button{font-family:inherit;cursor:pointer;border:none;}
 
 /* ---------- woven Celtic-knot border frame ---------- */
 #frame{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:25;}
+
+/* ---------- staff usage statistics panel ---------- */
+.stats-panel{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;
+  background:rgba(11,35,43,.72);padding:20px;}
+.stats-panel.show{display:flex;}
+.stats-card{background:linear-gradient(180deg,var(--parch),var(--parch2));border:3px solid var(--bronze);
+  border-radius:18px;padding:22px 26px;max-width:560px;width:100%;max-height:86vh;overflow-y:auto;
+  box-shadow:0 16px 40px rgba(0,0,0,.5);color:var(--ink);font-family:Georgia,serif;}
+.stats-card h2{margin:0 0 8px;font-size:26px;font-variant:small-caps;letter-spacing:1px;color:var(--sea2);}
+.stats-meta{font-size:15px;color:var(--ink-soft);margin-bottom:12px;line-height:1.5;}
+.stats-list{border-top:1px solid var(--bronze);max-height:44vh;overflow-y:auto;}
+.stat-row{display:flex;justify-content:space-between;gap:16px;padding:8px 2px;border-bottom:1px solid rgba(169,118,42,.3);font-size:16px;}
+.stat-row b{color:var(--bronze-dk);}
+.stats-note{font-size:13px;color:var(--ink-soft);font-style:italic;margin:12px 0;}
+.stats-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.stats-actions button{background:linear-gradient(180deg,var(--parch),var(--parch2));color:var(--bronze-dk);
+  border:2px solid var(--bronze);border-radius:30px;padding:10px 20px;font-size:16px;font-weight:700;cursor:pointer;}
+#statsReset{color:var(--celtic-red);border-color:var(--celtic-red);}
+
+/* ---------- attract / screensaver ---------- */
+.attract{position:fixed;inset:0;z-index:9000;display:none;text-align:center;padding:24px;
+  background:radial-gradient(135% 135% at 50% 42%, #34788a, var(--sea2));
+  align-items:center;justify-content:center;font-family:Georgia,serif;}
+.attract.show{display:flex;}
+.attract-inner{max-width:820px;}
+.attract-flag{width:70px;height:42px;border:2px solid var(--bronze);border-radius:4px;box-shadow:0 3px 8px rgba(0,0,0,.4);}
+.attract h1{color:var(--parch);font-size:clamp(28px,5.6vw,54px);font-variant:small-caps;letter-spacing:2px;
+  margin:10px 0 2px;text-shadow:0 3px 8px rgba(0,0,0,.5);}
+.attract-gd{color:var(--bronze-lt);font-style:italic;font-size:clamp(16px,2.6vw,24px);margin:0 0 24px;}
+.attract-fact{color:var(--parch);font-size:clamp(17px,2.6vw,25px);line-height:1.5;min-height:2.6em;max-width:760px;margin:0 auto 22px;transition:opacity .5s;}
+.attract-fact b{color:var(--bronze-lt);}
+.attract-qr{display:inline-flex;align-items:center;gap:12px;background:rgba(251,245,230,.14);
+  border:1px solid rgba(224,189,111,.5);border-radius:12px;padding:8px 14px;margin-bottom:22px;}
+.attract-qr img{width:64px;height:64px;background:#fff;border-radius:5px;padding:3px;}
+.attract-qr span{color:var(--parch);font-style:italic;font-size:15px;}
+.attract-touch{display:block;color:var(--sea2);font-weight:800;font-size:clamp(16px,2.2vw,21px);
+  background:linear-gradient(180deg,var(--bronze-lt),var(--bronze));padding:13px 28px;border-radius:40px;
+  box-shadow:0 6px 16px rgba(0,0,0,.4);width:max-content;max-width:90vw;margin:0 auto;animation:touchPulse 1.8s ease-in-out infinite;}
+@keyframes touchPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
 </style>
 </head>
 <body>
@@ -274,7 +313,93 @@ button{font-family:inherit;cursor:pointer;border:none;}
   </g>
 </svg>
 
+<!-- staff-only usage statistics (open with 5 taps in the top-right corner) -->
+<div class="stats-panel" id="statsPanel" aria-hidden="true">
+  <div class="stats-card">
+    <h2>📊 Usage Statistics</h2>
+    <div class="stats-meta" id="statsMeta"></div>
+    <div class="stats-list" id="statsList"></div>
+    <p class="stats-note">Anonymous counts, stored on this tablet only — no personal data. For the centre's own engagement reports.</p>
+    <div class="stats-actions">
+      <button id="statsCopy">Copy data</button>
+      <button id="statsReset">Reset</button>
+      <button id="statsClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- attract / screensaver loop -->
+<div class="attract" id="attract" aria-hidden="true">
+  <div class="attract-inner">
+    <svg class="cflag attract-flag" viewBox="0 0 150 90" aria-hidden="true">
+      <rect width="150" height="90" fill="#00843D"/><rect x="0" y="38.5" width="150" height="13" fill="#fff"/><rect x="47.5" y="0" width="13" height="90" fill="#fff"/>
+    </svg>
+    <h1>Explore the Isle of Barra</h1>
+    <p class="attract-gd">Eilean Bharraigh</p>
+    <div class="attract-fact" id="attractFact"></div>
+    <div class="attract-qr"><img src="../qr.png" alt="Scan to open at home" /><span>📱 Explore Barra at home — scan me</span></div>
+    <div class="attract-touch">👆 Touch anywhere to explore the map</div>
+  </div>
+</div>
+
 <script>
+/* ============================================================
+   USAGE TRACKING — anonymous counts kept in localStorage only.
+   Shares the same store/key as the main app so the centre can
+   read one combined engagement picture off any station.
+   ============================================================ */
+const Stats = {
+  KEY:"hc_stats_v1", d:null,
+  load(){ if(this.d) return this.d; try{ this.d = JSON.parse(localStorage.getItem(this.KEY)) || {}; }catch(_){ this.d = {}; } if(!this.d.counts) this.d.counts={}; if(!this.d.sessions) this.d.sessions=0; if(!this.d.first) this.d.first=Date.now(); return this.d; },
+  save(){ try{ localStorage.setItem(this.KEY, JSON.stringify(this.d)); }catch(_){} },
+  bump(name,n){ const d=this.load(); d.counts[name]=(d.counts[name]||0)+(n||1); d.last=Date.now(); this.save(); },
+  session(){ const d=this.load(); d.sessions++; d.last=Date.now(); this.save(); }
+};
+Stats.session();
+
+const STAT_LABELS = {
+  markers_opened:"Map places opened (total)"
+};
+function statLabel(k){
+  if(k.indexOf("m:")===0) return "• " + k.slice(2);
+  return STAT_LABELS[k] || k;
+}
+function fmtDate(ts){ if(!ts) return "—"; try{ return new Date(ts).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}); }catch(_){ return "—"; } }
+function renderStats(){
+  const d = Stats.load();
+  document.getElementById("statsMeta").innerHTML =
+    "<b>"+(d.sessions||0)+"</b> sessions on this tablet · since "+fmtDate(d.first)+" · last used "+fmtDate(d.last);
+  const keys = Object.keys(d.counts).sort((a,b)=>d.counts[b]-d.counts[a]);
+  const list = document.getElementById("statsList");
+  if(!keys.length){ list.innerHTML = "<p style='opacity:.7'>No activity recorded yet.</p>"; return; }
+  list.innerHTML = keys.map(k=>"<div class='stat-row'><span>"+statLabel(k)+"</span><b>"+d.counts[k]+"</b></div>").join("");
+}
+function openStats(){ renderStats(); document.getElementById("statsPanel").classList.add("show"); }
+function closeStats(){ document.getElementById("statsPanel").classList.remove("show"); }
+document.getElementById("statsClose").onclick = closeStats;
+document.getElementById("statsReset").onclick = ()=>{
+  if(confirm("Reset all usage statistics on this tablet? This cannot be undone.")){
+    Stats.d = { counts:{}, sessions:0, first:Date.now() }; Stats.save(); renderStats();
+  }
+};
+document.getElementById("statsCopy").onclick = ()=>{
+  const txt = JSON.stringify(Stats.load(), null, 2);
+  const done = ()=>{ const b=document.getElementById("statsCopy"); const o=b.textContent; b.textContent="Copied ✓"; setTimeout(()=>b.textContent=o,1500); };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,done); } else { done(); }
+};
+/* discreet staff access: 5 quick taps in the top-right corner, or #stats */
+(function(){
+  let taps=[], W=window;
+  document.addEventListener("pointerdown", e=>{
+    if(e.clientX > W.innerWidth-70 && e.clientY < 70){
+      const now = (performance && performance.now) ? performance.now() : 0;
+      taps.push(now); taps = taps.filter(t=> now-t < 3000);
+      if(taps.length >= 5){ taps=[]; openStats(); }
+    }
+  }, {passive:true});
+  if(location.hash === "#stats") setTimeout(openStats, 300);
+})();
+
 /* ============================================================
    POINTS OF INTEREST — real places on Barra & Vatersay.
    x / y are positions on the 1600 x 1000 map (north is up).
@@ -560,17 +685,49 @@ function openPanel(p){
   document.getElementById("pDesc").textContent = p.desc;
   document.getElementById("pFact").innerHTML = "<b>Did you know?</b> " + p.fact;
   panel.classList.add("open");
+  Stats.bump("markers_opened");
+  Stats.bump("m:" + p.title);
   resetIdle();
 }
 function closePanel(){ panel.classList.remove("open"); selectMarker(null); }
 document.getElementById("pClose").onclick = ()=>{ closePanel(); resetIdle(); };
 
-/* ---- kiosk idle reset ---- */
-const IDLE_MS = 90000;
-let idleTimer=null;
+/* ---- kiosk idle reset + attract loop ---- */
+const AFK_MS = 90000, ATTRACT_MS = 25000;
+let idleTimer=null, attractTimer=null, attractCycle=null;
+const attractEl = document.getElementById("attract");
+function attractFactShow(){
+  const el = document.getElementById("attractFact");
+  el.style.opacity = 0;
+  setTimeout(()=>{
+    // rotate through the places rather than repeat one
+    attractFactShow._i = ((attractFactShow._i||0) + 1) % POIS.length;
+    const q = POIS[attractFactShow._i];
+    el.innerHTML = "<b>" + q.title + "</b> — " + q.fact;
+    el.style.opacity = 1;
+  }, 260);
+}
+function showAttract(){
+  attractFactShow._i = -1;
+  attractFactShow();
+  attractEl.classList.add("show");
+  attractEl.setAttribute("aria-hidden","false");
+  clearInterval(attractCycle);
+  attractCycle = setInterval(attractFactShow, 6500);
+}
+function hideAttract(){
+  attractEl.classList.remove("show");
+  attractEl.setAttribute("aria-hidden","true");
+  clearInterval(attractCycle); attractCycle = null;
+}
+function idleReturn(){
+  closePanel(); fit();
+  attractTimer = setTimeout(showAttract, ATTRACT_MS);
+}
 function resetIdle(){
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(()=>{ closePanel(); fit(); }, IDLE_MS);
+  clearTimeout(idleTimer); clearTimeout(attractTimer);
+  hideAttract();
+  idleTimer = setTimeout(idleReturn, AFK_MS);
 }
 ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev, resetIdle, {passive:true}));
 
