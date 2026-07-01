@@ -37,6 +37,25 @@ for public use before the stations go live.
 - [ ] ✕ — or tapping the sea away from a marker — closes the panel.
 - [ ] Heritage places (bronze) and hotels/campsites (blue) are both present.
 
+### Accessibility (both apps)
+- [ ] The **♿ button** (bottom-left) opens a small menu with **Larger text** and
+      **High contrast**. Each toggles on/off and shows its state.
+- [ ] Choices **persist** after an idle reset and are **shared** between the two
+      apps on the same tablet (set once, applies to both stations' browser).
+- [ ] High contrast switches the reading surfaces to black-on-white; larger text
+      enlarges the descriptions/facts (game buttons and layout stay put).
+
+### Attract / screensaver (both apps)
+- [ ] After ~90 s idle the app returns home; ~25 s later a full-screen **attract
+      loop** appears (Barra invite + rotating facts + "scan at home" QR code).
+- [ ] Touching anywhere dismisses it instantly and returns to the app.
+
+### Usage statistics (staff only — both apps)
+- [ ] **Five quick taps in the top-right corner** (or add `#stats` to the URL)
+      opens the usage panel: sessions, first/last used and per-feature counts.
+- [ ] **Copy data** puts the JSON on the clipboard; **Reset** clears it (with a
+      confirm). Counts are anonymous, on-device only, and shared across both apps.
+
 ### Kiosk behaviour (all apps)
 - [ ] After ~90 s untouched, the app returns to its home/overview by itself.
 - [ ] No way to leave the app: back button, nav bar and gestures do nothing
