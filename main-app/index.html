@@ -256,12 +256,22 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .tray-label{background:linear-gradient(180deg,var(--parch),var(--parch2));color:var(--bronze-dk);
   font-weight:700;font-size:clamp(15px,2vw,19px);padding:7px 18px;border-radius:30px;
   border:2px solid var(--bronze);box-shadow:0 3px 8px var(--shadow);}
-.piece{width:88px;height:88px;touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none;
-  filter:drop-shadow(0 5px 7px rgba(0,0,0,.32));animation:piecehop 1.6s ease-in-out infinite;
-  transition:transform .25s cubic-bezier(.4,0,.2,1);}
-.piece svg{width:100%;height:100%;pointer-events:none;}
+.piece-row{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:nowrap;max-width:96vw;}
+.piece{width:74px;height:74px;flex:none;touch-action:none;-webkit-user-select:none;user-select:none;
+  transition:transform .25s cubic-bezier(.4,0,.2,1), opacity .3s, filter .3s;}
+.piece svg{width:100%;height:100%;pointer-events:none;display:block;}
+/* pieces not yet due: greyed out and not draggable */
+.piece.locked{filter:grayscale(1) drop-shadow(0 3px 4px rgba(0,0,0,.25));opacity:.35;
+  cursor:default;pointer-events:none;}
+/* the current piece: full colour, glowing and draggable */
+.piece.active{cursor:grab;animation:pieceglow 1.4s ease-in-out infinite;}
+.piece.active:active{transform:scale(.94);}
+@keyframes pieceglow{
+  0%,100%{filter:drop-shadow(0 5px 7px rgba(0,0,0,.32));transform:translateY(0);}
+  50%{filter:drop-shadow(0 0 11px rgba(224,189,111,1)) drop-shadow(0 5px 7px rgba(0,0,0,.32));transform:translateY(-6px);}}
+/* placed pieces: the slot is left empty */
+.piece.placed{visibility:hidden;pointer-events:none;animation:none;}
 .piece.dragging{cursor:grabbing;z-index:200;animation:none;transition:none;}
-@keyframes piecehop{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
 /* the house glows as a drop target while dragging */
 .build-house.drop-ready{filter:drop-shadow(0 0 0 rgba(0,0,0,.25)) drop-shadow(0 0 14px rgba(224,189,111,.95));}
 
@@ -337,7 +347,8 @@ body.screen-home #frame{display:block;}
   .build-tray{max-width:94vw;}
   .tray-label{max-width:90vw;box-sizing:border-box;text-align:center;overflow-wrap:break-word;}
   .build-progress .dot{width:12px;height:12px;}
-  .piece{width:74px;height:74px;}
+  .piece-row{gap:7px;}
+  .piece{width:50px;height:50px;}
 
   .gallery-scroll{padding:16px 14px 36px;}
   .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;}
@@ -502,8 +513,8 @@ body.screen-home #frame{display:block;}
     </svg>
     <div class="build-fact" id="buildFact">Drag each piece onto the house to build a <b>taigh-dubh</b> — an old Barra home!</div>
     <div class="build-tray" id="buildTray">
-      <div class="tray-label" id="trayLabel">Drag the stones onto the house ↑</div>
-      <div class="piece" id="buildPiece" role="button" aria-label="Building piece — drag onto the house"></div>
+      <div class="tray-label" id="trayLabel">Drag the glowing piece onto the house ↑</div>
+      <div class="piece-row" id="pieceRow"></div>
     </div>
   </div>
   <div class="celebrate" id="buildCel">
@@ -1261,53 +1272,60 @@ window.exhibitPlate = exhibitPlate;
       this.house = document.getElementById("buildHouse");
       this.fact = document.getElementById("buildFact");
       this.tray = document.getElementById("buildTray");
-      this.piece = document.getElementById("buildPiece");
+      this.row = document.getElementById("pieceRow");
       this.label = document.getElementById("trayLabel");
       this.cel = document.getElementById("buildCel");
+      this.pieceEls = []; this.dragEl = null;
       const wrap = document.getElementById("buildDots");
       for(let k=0;k<this.steps.length;k++){ const d=document.createElement("span"); d.className="dot"; wrap.appendChild(d); this.dots.push(d); }
       bindTap(document.getElementById("buildAgain"), ()=>{ this.cel.classList.remove("show"); this.reset(); });
-      // drag the current piece onto the house
-      this.piece.addEventListener("pointerdown", e=>{
-        if(this.i >= this.steps.length) return;
-        this.dragging = true; this.sx = e.clientX; this.sy = e.clientY;
-        try{ this.piece.setPointerCapture(e.pointerId); }catch(_){}
-        this.piece.classList.add("dragging");
+    },
+    attachDrag(el, idx){
+      el.addEventListener("pointerdown", e=>{
+        if(idx !== this.i) return;                    // only the glowing (current) piece can be dragged
+        this.dragging = true; this.sx = e.clientX; this.sy = e.clientY; this.dragEl = el;
+        try{ el.setPointerCapture(e.pointerId); }catch(_){}
+        el.classList.add("dragging");
         this.house.classList.add("drop-ready");
         resetIdle();
       });
-      this.piece.addEventListener("pointermove", e=>{
-        if(!this.dragging) return;
-        this.piece.style.transform = `translate(${e.clientX-this.sx}px,${e.clientY-this.sy}px)`;
+      el.addEventListener("pointermove", e=>{
+        if(!this.dragging || this.dragEl !== el) return;
+        el.style.transform = `translate(${e.clientX-this.sx}px,${e.clientY-this.sy}px)`;
       });
       const end = e=>{
-        if(!this.dragging) return;
+        if(!this.dragging || this.dragEl !== el) return;
         this.dragging = false;
-        this.piece.classList.remove("dragging");
+        el.classList.remove("dragging");
         this.house.classList.remove("drop-ready");
         const r = this.house.getBoundingClientRect(), pad = 30;
         const hit = e.clientX>r.left-pad && e.clientX<r.right+pad && e.clientY>r.top-pad && e.clientY<r.bottom+pad;
-        if(hit) this.place(); else this.piece.style.transform = "";  // snap back
+        if(hit) this.place(); else el.style.transform = "";     // miss → springs back to its slot
+        this.dragEl = null;
       };
-      this.piece.addEventListener("pointerup", end);
-      this.piece.addEventListener("pointercancel", e=>{ this.dragging=false; this.piece.classList.remove("dragging"); this.house.classList.remove("drop-ready"); this.piece.style.transform=""; });
+      el.addEventListener("pointerup", end);
+      el.addEventListener("pointercancel", ()=>{ this.dragging=false; this.dragEl=null; el.classList.remove("dragging"); this.house.classList.remove("drop-ready"); el.style.transform=""; });
     },
     start(){ this.reset(); },
     reset(){
-      this.i = 0; this.dragging = false;
+      this.i = 0; this.dragging = false; this.dragEl = null;
       this.steps.forEach(s=>document.getElementById(s.layer).classList.remove("on"));
       this.dots.forEach(d=>d.classList.remove("done"));
-      this.fact.innerHTML = "Drag each piece onto the house to build a <b>taigh-dubh</b> — an old Barra home!";
+      this.fact.innerHTML = "Drag each glowing piece onto the house to build a <b>taigh-dubh</b> — an old Barra home!";
+      this.label.textContent = this.steps[0].label;
       this.cel.classList.remove("show");
-      this.showPiece();
-    },
-    showPiece(){
-      if(this.i >= this.steps.length){ this.tray.style.display = "none"; return; }
-      const s = this.steps[this.i];
-      this.piece.innerHTML = this.pieceSVG(s.piece);
-      this.piece.style.transform = "";
-      this.label.textContent = s.label;
       this.tray.style.display = "flex";
+      // lay every piece out in order: the first glows, the rest are greyed out
+      this.row.innerHTML = "";
+      this.pieceEls = [];
+      this.steps.forEach((s, idx)=>{
+        const el = document.createElement("div");
+        el.className = "piece " + (idx === 0 ? "active" : "locked");
+        el.innerHTML = this.pieceSVG(s.piece);
+        this.attachDrag(el, idx);
+        this.row.appendChild(el);
+        this.pieceEls.push(el);
+      });
     },
     place(){
       if(this.i >= this.steps.length) return;
@@ -1316,12 +1334,19 @@ window.exhibitPlate = exhibitPlate;
       this.fact.innerHTML = s.fact;
       if(this.dots[this.i]) this.dots[this.i].classList.add("done");
       Sound.blip(420 + this.i*55, 0.12, "triangle");
+      const placed = this.pieceEls[this.i];
+      placed.classList.remove("active");
+      placed.classList.add("placed");             // leave its slot empty
+      placed.style.transform = "";
       this.i++;
       resetIdle();
       if(this.i < this.steps.length){
-        setTimeout(()=>this.showPiece(), 260);
+        const next = this.pieceEls[this.i];
+        next.classList.remove("locked");
+        next.classList.add("active");             // light up the next piece
+        this.label.textContent = this.steps[this.i].label;
       } else {
-        this.tray.style.display = "none";
+        this.label.textContent = "Sgoinneil! The taigh-dubh is built!";
         Sound.win();
         setTimeout(()=>this.cel.classList.add("show"), 700);
       }
