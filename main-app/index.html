@@ -354,6 +354,25 @@ body.screen-home #frame{display:block;}
   .gallery-scroll{padding:16px 14px 36px;}
   .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;}
 }
+
+/* ---------- staff usage statistics panel ---------- */
+.stats-panel{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;
+  background:rgba(11,35,43,.72);backdrop-filter:blur(2px);padding:20px;}
+.stats-panel.show{display:flex;}
+.stats-card{background:linear-gradient(180deg,var(--parch),var(--parch2));border:3px solid var(--bronze);
+  border-radius:18px;padding:22px 26px;max-width:560px;width:100%;max-height:86vh;overflow-y:auto;
+  box-shadow:0 16px 40px rgba(0,0,0,.5);color:var(--ink);font-family:Georgia,serif;}
+.stats-card h2{margin:0 0 8px;font-size:26px;font-variant:small-caps;letter-spacing:1px;color:var(--sea2);}
+.stats-meta{font-size:15px;color:var(--ink-soft);margin-bottom:12px;line-height:1.5;}
+.stats-list{border-top:1px solid var(--bronze);}
+.stat-row{display:flex;justify-content:space-between;gap:16px;padding:8px 2px;border-bottom:1px solid rgba(169,118,42,.3);font-size:17px;}
+.stat-row b{color:var(--bronze-dk);}
+.stats-note{font-size:13px;color:var(--ink-soft);font-style:italic;margin:12px 0;}
+.stats-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.stats-actions button{background:linear-gradient(180deg,var(--parch),var(--parch2));color:var(--bronze-dk);
+  border:2px solid var(--bronze);border-radius:30px;padding:10px 20px;font-size:16px;font-weight:700;cursor:pointer;}
+.stats-actions button:active{transform:scale(.96);}
+#statsReset{color:var(--celtic-red);border-color:var(--celtic-red);}
 </style>
 </head>
 <body>
@@ -791,6 +810,21 @@ body.screen-home #frame{display:block;}
   </g>
 </svg>
 
+<!-- staff-only usage statistics (open with 5 taps in the top-right corner) -->
+<div class="stats-panel" id="statsPanel" aria-hidden="true">
+  <div class="stats-card">
+    <h2>📊 Usage Statistics</h2>
+    <div class="stats-meta" id="statsMeta"></div>
+    <div class="stats-list" id="statsList"></div>
+    <p class="stats-note">Anonymous counts, stored on this tablet only — no personal data, no internet needed. For the centre's own engagement reports.</p>
+    <div class="stats-actions">
+      <button id="statsCopy">Copy data</button>
+      <button id="statsReset">Reset</button>
+      <button id="statsClose">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    Heritage Centre — Main Interactive App
@@ -861,11 +895,64 @@ window.exhibitPlate = exhibitPlate;
 (function(){
   "use strict";
 
+  /* ============================================================
+     USAGE TRACKING — anonymous counts kept on THIS tablet
+     (localStorage, offline, no personal data). For the centre's
+     own engagement/funding stats. Staff view: 5 taps in the
+     top-right corner, or open the app with #stats.
+     ============================================================ */
+  const Stats = {
+    KEY:"hc_stats_v1", d:null,
+    load(){
+      try{ this.d = JSON.parse(localStorage.getItem(this.KEY)); }catch(e){ this.d = null; }
+      if(!this.d || typeof this.d!=="object"){ this.d = { firstSeen:Date.now(), sessions:0, events:{} }; }
+      if(!this.d.events) this.d.events = {};
+      return this.d;
+    },
+    save(){ try{ localStorage.setItem(this.KEY, JSON.stringify(this.d)); }catch(e){} },
+    bump(name, n){ if(!this.d) this.load(); this.d.events[name] = (this.d.events[name]||0) + (n||1); this.d.lastSeen = Date.now(); this.save(); },
+    session(){ this.load(); this.d.sessions = (this.d.sessions||0) + 1; this.d.lastSeen = Date.now(); this.save(); }
+  };
+  Stats.session();
+  const STAT_LABELS = {
+    game_opened:"Herring game — opened", gallery_opened:"Exhibit gallery — opened",
+    build_opened:"Blackhouse builder — opened", herring_hauls:"Herring hauls to the pier",
+    blackhouse_built:"Blackhouses completed", exhibit_views:"Exhibits viewed"
+  };
+  function renderStats(){
+    const d = Stats.load(), fmt = t => t ? new Date(t).toLocaleString() : "—";
+    document.getElementById("statsMeta").innerHTML =
+      "Visits (app opened): <b>"+(d.sessions||0)+"</b><br>First used: "+fmt(d.firstSeen)+"<br>Last used: "+fmt(d.lastSeen);
+    const keys = Object.keys(d.events).sort((a,b)=>d.events[b]-d.events[a]);
+    document.getElementById("statsList").innerHTML = keys.length
+      ? keys.map(k=>"<div class='stat-row'><span>"+(STAT_LABELS[k]||k)+"</span><b>"+d.events[k]+"</b></div>").join("")
+      : "<div class='stat-row'><span>No activity recorded yet</span><b>0</b></div>";
+  }
+  function openStats(){ renderStats(); document.getElementById("statsPanel").classList.add("show"); }
+  document.getElementById("statsClose").addEventListener("click", ()=>document.getElementById("statsPanel").classList.remove("show"));
+  document.getElementById("statsCopy").addEventListener("click", e=>{
+    try{ navigator.clipboard.writeText(JSON.stringify(Stats.load(), null, 2)); }catch(_){}
+    const b=e.currentTarget, o=b.textContent; b.textContent="Copied!"; setTimeout(()=>b.textContent=o, 1200);
+  });
+  document.getElementById("statsReset").addEventListener("click", ()=>{
+    if(confirm("Reset all usage statistics on this tablet?")){ try{ localStorage.removeItem(Stats.KEY); }catch(_){} Stats.d=null; Stats.load(); renderStats(); }
+  });
+  (function(){ let taps=0, tt=0;
+    document.addEventListener("pointerdown", e=>{
+      if(e.clientX > window.innerWidth-60 && e.clientY < 60){
+        const now=Date.now(); if(now-tt>2500) taps=0; taps++; tt=now;
+        if(taps>=5){ taps=0; openStats(); }
+      }
+    }, true);
+    if((location.hash||"")==="#stats") openStats();
+  })();
+
   /* ---------- Screen navigation ---------- */
   const screens = document.querySelectorAll(".screen");
   function show(id){
     screens.forEach(s => s.classList.toggle("active", s.id === id));
     document.body.className = "screen-" + id; // drives the home-only knot frame
+    if (id !== "home") Stats.bump(id + "_opened");
     if (id === "game") Game.start();
     else Game.stop();
     if (id === "gallery") Gallery.ensure();
@@ -1127,6 +1214,7 @@ window.exhibitPlate = exhibitPlate;
       this.updateBasket();
       this.els.boat.classList.remove("ready");
       this.hauls++;
+      Stats.bump("herring_hauls");
       this.setWeather(this.hauls);   // each haul still changes the weather
       confettiBurst();
       // endless play — refill the net and show praise + a fact every haul
@@ -1201,6 +1289,7 @@ window.exhibitPlate = exhibitPlate;
     },
     open(i){
       this.idx = i; resetIdle();
+      Stats.bump("exhibit_views");
       const lb = document.getElementById("lightbox");
       this.render();
       lb.classList.add("show");
@@ -1348,6 +1437,7 @@ window.exhibitPlate = exhibitPlate;
         this.label.textContent = this.steps[this.i].label;
       } else {
         this.label.textContent = "Sgoinneil! The taigh-dubh is built!";
+        Stats.bump("blackhouse_built");
         Sound.win();
         setTimeout(()=>this.cel.classList.add("show"), 700);
       }
