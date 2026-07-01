@@ -246,7 +246,8 @@ button{font-family:inherit;cursor:pointer;border:none;}
 @keyframes smoke{from{stroke-dashoffset:0;}to{stroke-dashoffset:-180;}}
 .fire-glow{transform-origin:center;animation:flick 1.2s ease-in-out infinite;}
 @keyframes flick{0%,100%{opacity:.5;}50%{opacity:.9;}}
-.build-fact{margin-top:10px;max-width:min(90vw,680px);text-align:center;
+.build-fact{margin-top:10px;width:min(90vw,680px);max-width:680px;text-align:center;box-sizing:border-box;
+  min-height:110px;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(180deg,var(--parch),var(--parch2));color:var(--ink);
   font-size:clamp(15px,2.1vw,19px);line-height:1.4;padding:11px 22px;border-radius:14px;
   border:2px solid var(--bronze);box-shadow:0 5px 12px var(--shadow);}
@@ -343,7 +344,7 @@ body.screen-home #frame{display:block;}
 
   .build-stage{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:6px 14px 24px;}
   .build-house{max-height:38vh;width:min(86vw,460px);}
-  .build-fact{width:auto;max-width:520px;margin:10px auto 0;overflow-wrap:break-word;}
+  .build-fact{width:min(94vw,520px);max-width:520px;min-height:120px;margin:10px auto 0;overflow-wrap:break-word;}
   .build-tray{max-width:94vw;}
   .tray-label{max-width:90vw;box-sizing:border-box;text-align:center;overflow-wrap:break-word;}
   .build-progress .dot{width:12px;height:12px;}
@@ -511,7 +512,7 @@ body.screen-home #frame{display:block;}
         </g>
       </g>
     </svg>
-    <div class="build-fact" id="buildFact">Drag each piece onto the house to build a <b>taigh-dubh</b> — an old Barra home!</div>
+    <div class="build-fact" id="buildFact"><span id="buildFactText">Drag each glowing piece onto the house to build a <b>taigh-dubh</b> — an old Barra home!</span></div>
     <div class="build-tray" id="buildTray">
       <div class="tray-label" id="trayLabel">Drag the glowing piece onto the house ↑</div>
       <div class="piece-row" id="pieceRow"></div>
@@ -1270,7 +1271,7 @@ window.exhibitPlate = exhibitPlate;
     },
     init(){
       this.house = document.getElementById("buildHouse");
-      this.fact = document.getElementById("buildFact");
+      this.fact = document.getElementById("buildFactText");
       this.tray = document.getElementById("buildTray");
       this.row = document.getElementById("pieceRow");
       this.label = document.getElementById("trayLabel");
