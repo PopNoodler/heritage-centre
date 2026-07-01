@@ -378,6 +378,26 @@ body.screen-home #frame{display:block;}
   border:2px solid var(--bronze);border-radius:30px;padding:10px 20px;font-size:16px;font-weight:700;cursor:pointer;}
 .stats-actions button:active{transform:scale(.96);}
 #statsReset{color:var(--celtic-red);border-color:var(--celtic-red);}
+
+/* ---------- attract / screensaver ---------- */
+.attract{position:fixed;inset:0;z-index:9000;display:none;
+  background:radial-gradient(135% 110% at 50% 0%, #34788a, var(--sea2));
+  align-items:center;justify-content:center;text-align:center;padding:24px;
+  font-family:Georgia,serif;animation:attractFade .6s ease;}
+.attract.show{display:flex;}
+@keyframes attractFade{from{opacity:0;}to{opacity:1;}}
+.attract-inner{max-width:820px;}
+.attract-knot{width:60px;height:60px;color:var(--bronze-lt);}
+.attract h1{color:var(--parch);font-size:clamp(30px,6vw,58px);font-variant:small-caps;
+  letter-spacing:3px;margin:6px 0 2px;text-shadow:0 3px 8px rgba(0,0,0,.5);line-height:1.1;}
+.attract-gd{color:var(--bronze-lt);font-style:italic;font-size:clamp(16px,2.6vw,24px);margin:0 0 26px;letter-spacing:1px;}
+.attract-fact{color:var(--parch);font-size:clamp(17px,2.8vw,26px);line-height:1.5;min-height:2.6em;
+  max-width:760px;margin:0 auto 30px;transition:opacity .5s;}
+.attract-fact b{color:var(--bronze-lt);}
+.attract-touch{display:inline-block;color:var(--sea2);font-weight:800;font-size:clamp(17px,2.4vw,22px);
+  background:linear-gradient(180deg,var(--bronze-lt),var(--bronze));padding:14px 30px;border-radius:40px;
+  box-shadow:0 6px 16px rgba(0,0,0,.4);animation:touchPulse 1.8s ease-in-out infinite;}
+@keyframes touchPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
 </style>
 </head>
 <body>
@@ -834,6 +854,17 @@ body.screen-home #frame{display:block;}
   </div>
 </div>
 
+<!-- attract / screensaver loop shown after a long idle to invite visitors -->
+<div class="attract" id="attract" aria-hidden="true">
+  <div class="attract-inner">
+    <svg class="knot attract-knot"><use href="#triq"/></svg>
+    <h1>Isle of Barra<br>Heritage Centre</h1>
+    <p class="attract-gd">Ionad Dualchais Bharraigh</p>
+    <div class="attract-fact" id="attractFact"></div>
+    <div class="attract-touch">👆 Touch anywhere to explore</div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    Heritage Centre — Main Interactive App
@@ -958,7 +989,7 @@ window.exhibitPlate = exhibitPlate;
 
   /* ---------- Screen navigation ---------- */
   const screens = document.querySelectorAll(".screen");
-  function show(id){
+  function show(id, keepIdle){
     screens.forEach(s => s.classList.toggle("active", s.id === id));
     document.body.className = "screen-" + id; // drives the home-only knot frame
     if (id !== "home") Stats.bump(id + "_opened");
@@ -966,7 +997,7 @@ window.exhibitPlate = exhibitPlate;
     else Game.stop();
     if (id === "gallery") Gallery.ensure();
     if (id === "build") Build.start();
-    resetIdle();
+    if (!keepIdle) resetIdle();
   }
   // Bind directly to each control AND accept touch — robust on iOS Safari.
   function bindTap(el, fn){
@@ -1325,16 +1356,29 @@ window.exhibitPlate = exhibitPlate;
   /* ---------- kiosk idle reset ---------- */
   // AFK / idle timer: after this long with no interaction, return to the HOME
   // (main) screen so the station is always ready for the next visitor.
-  const AFK_MS = 90000;   // 90 seconds — change this to adjust the timeout
-  let idleTimer = null;
+  const AFK_MS = 90000;       // return to the home screen after 90s of no interaction
+  const ATTRACT_MS = 25000;   // then, after a further idle, show the attract loop
+  let idleTimer = null, attractTimer = null, attractCycle = null;
+  const attractEl = document.getElementById("attract");
+  function attractFact(){
+    const el = document.getElementById("attractFact");
+    el.style.opacity = 0;
+    setTimeout(()=>{ el.innerHTML = FUN_FACTS[Math.floor(Math.random()*FUN_FACTS.length)]; el.style.opacity = 1; }, 250);
+  }
+  function showAttract(){ attractFact(); attractEl.classList.add("show");
+    clearInterval(attractCycle); attractCycle = setInterval(attractFact, 6500); }
+  function hideAttract(){ attractEl.classList.remove("show"); clearInterval(attractCycle); attractCycle = null; }
+  function scheduleAttract(){ clearTimeout(attractTimer); attractTimer = setTimeout(showAttract, ATTRACT_MS); }
   function goHome(){
     Gallery.close();                                                  // close the gallery lightbox
     document.getElementById("celebrate").classList.remove("show");    // close the herring-game card
     document.getElementById("buildCel").classList.remove("show");     // close the blackhouse card
-    show("home");                                                     // back to the 3-card main screen
+    show("home", true);                                               // back to home WITHOUT resetting the idle clock
+    scheduleAttract();                                                // idle on home → attract loop shortly after
   }
   function resetIdle(){
-    clearTimeout(idleTimer);
+    clearTimeout(idleTimer); clearTimeout(attractTimer);
+    hideAttract();
     idleTimer = setTimeout(goHome, AFK_MS);
   }
   ["pointerdown","pointermove","touchstart","keydown"].forEach(ev=>
