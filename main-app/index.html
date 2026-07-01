@@ -95,6 +95,11 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .barra-flag{width:66px;height:40px;display:block;border:1px solid rgba(43,35,23,.4);
   border-radius:3px;box-shadow:0 2px 5px rgba(0,0,0,.3);}
 .flag-banner span{font-style:italic;color:var(--ink-soft);font-size:clamp(15px,2vw,19px);}
+.home-qr{display:flex;align-items:center;gap:14px;margin-top:26px;max-width:min(92vw,440px);
+  background:linear-gradient(180deg,var(--parch),var(--parch2));border:2px solid var(--bronze);
+  border-radius:14px;padding:10px 16px;box-shadow:0 5px 12px var(--shadow);}
+.home-qr img{width:78px;height:78px;border-radius:6px;background:#fff;padding:4px;flex:none;box-sizing:border-box;}
+.home-qr span{font-style:italic;color:var(--ink-soft);font-size:clamp(14px,2vw,17px);}
 .card-row{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;}
 .menu-card{
   position:relative;width:min(40vw,360px);min-width:260px;
@@ -451,6 +456,10 @@ body.screen-home #frame{display:block;}
         <span class="gd">Tog Taigh-dubh</span>
         <p>Build an old Barra house, step by step!</p>
       </button>
+    </div>
+    <div class="home-qr">
+      <img src="../qr.png" alt="Scan to open at home" />
+      <span>📱 Take Barra home — scan to explore on your own phone</span>
     </div>
   </div>
   <svg class="wave-deco" viewBox="0 0 1440 90" preserveAspectRatio="none">
@@ -1003,9 +1012,12 @@ window.exhibitPlate = exhibitPlate;
   const SPK_ON = `<svg width="26" height="26" viewBox="0 0 24 24" fill="#7c531a" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="#7c531a" stroke-width="2"/><path d="M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="#7c531a" stroke-width="2"/></svg>`;
   const SPK_OFF = `<svg width="26" height="26" viewBox="0 0 24 24" fill="#7c531a" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9l6 6M22 9l-6 6" stroke="#7c531a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
   const soundBtn = document.getElementById("soundBtn");
-  soundBtn.innerHTML = SPK_ON;
+  // sound is OFF by default (kinder in a quiet centre); staff can turn it on and the choice sticks
+  try{ Sound.on = localStorage.getItem("hc_sound") === "1"; }catch(_){ Sound.on = false; }
+  soundBtn.innerHTML = Sound.on ? SPK_ON : SPK_OFF;
   bindTap(soundBtn, ()=>{
     Sound.on = !Sound.on;
+    try{ localStorage.setItem("hc_sound", Sound.on ? "1" : "0"); }catch(_){}
     soundBtn.innerHTML = Sound.on ? SPK_ON : SPK_OFF;
     if(Sound.on) Sound.blip(700,0.1);
   });
