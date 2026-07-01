@@ -53,6 +53,7 @@ for public use before the stations go live.
 ### Usage statistics (staff only — both apps)
 - [ ] **Five quick taps in the top-right corner** (or add `#stats` to the URL)
       opens the usage panel: sessions, first/last used and per-feature counts.
+      (Tapping the visible ♿ accessibility button there does not count.)
 - [ ] **Copy data** puts the JSON on the clipboard; **Reset** clears it (with a
       confirm). Counts are anonymous, on-device only, and shared across both apps.
 

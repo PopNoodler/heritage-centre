@@ -263,11 +263,14 @@ button{font-family:inherit;cursor:pointer;border:none;}
   font-weight:700;font-size:clamp(15px,2vw,19px);padding:7px 18px;border-radius:30px;
   border:2px solid var(--bronze);box-shadow:0 3px 8px var(--shadow);}
 .piece-row{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:nowrap;max-width:96vw;}
-.piece{width:74px;height:74px;flex:none;touch-action:none;-webkit-user-select:none;user-select:none;
+.piece{width:78px;height:78px;flex:none;box-sizing:border-box;padding:8px;border-radius:15px;
+  background:radial-gradient(circle at 50% 34%, #fcf7ea, #ecdcb6);
+  border:2px solid var(--bronze);box-shadow:0 3px 7px rgba(20,12,0,.3);
+  touch-action:none;-webkit-user-select:none;user-select:none;
   transition:transform .25s cubic-bezier(.4,0,.2,1), opacity .3s, filter .3s;}
 .piece svg{width:100%;height:100%;pointer-events:none;display:block;}
-/* pieces not yet due: greyed out and not draggable */
-.piece.locked{filter:grayscale(1) drop-shadow(0 3px 4px rgba(0,0,0,.25));opacity:.35;
+/* pieces not yet due: dimmed and not draggable, but still readable */
+.piece.locked{filter:grayscale(.7);opacity:.5;
   cursor:default;pointer-events:none;}
 /* the current piece: full colour, glowing and draggable */
 .piece.active{cursor:grab;animation:pieceglow 1.4s ease-in-out infinite;}
@@ -370,7 +373,7 @@ body.screen-home #frame{display:block;}
   .tray-label{max-width:90vw;box-sizing:border-box;text-align:center;overflow-wrap:break-word;}
   .build-progress .dot{width:12px;height:12px;}
   .piece-row{gap:7px;}
-  .piece{width:50px;height:50px;}
+  .piece{width:54px;height:54px;padding:6px;border-radius:12px;}
 
   .gallery-scroll{padding:16px 14px 36px;}
   .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;}
@@ -416,12 +419,18 @@ body.screen-home #frame{display:block;}
 @keyframes touchPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
 
 /* ===================== accessibility ===================== */
-.a11y-btn{position:fixed;left:14px;bottom:14px;z-index:9500;width:58px;height:58px;border-radius:50%;
-  border:3px solid var(--bronze);cursor:pointer;background:linear-gradient(180deg,var(--parch),var(--parch2));
-  color:var(--bronze-dk);font-size:25px;font-weight:800;line-height:1;box-shadow:0 4px 12px var(--shadow);}
-.a11y-menu{position:fixed;left:14px;bottom:80px;z-index:9501;display:none;min-width:216px;
+.a11y-btn{position:fixed;right:12px;top:12px;z-index:9500;width:40px;height:40px;border-radius:50%;
+  border:1.5px solid rgba(169,118,42,.55);cursor:pointer;background:rgba(240,230,205,.5);
+  color:var(--bronze-dk);font-size:19px;font-weight:700;line-height:1;opacity:.65;
+  box-shadow:0 2px 6px rgba(20,12,0,.2);transition:opacity .2s,background .2s,border-color .2s;}
+.a11y-btn:hover,.a11y-btn:focus,.a11y-btn[aria-expanded="true"]{opacity:1;
+  background:linear-gradient(180deg,var(--parch),var(--parch2));border-color:var(--bronze);}
+.a11y-menu{position:fixed;right:12px;top:58px;z-index:9501;display:none;min-width:216px;
   background:linear-gradient(180deg,var(--parch),var(--parch2));border:3px solid var(--bronze);border-radius:16px;
   padding:12px;box-shadow:0 8px 26px var(--shadow);}
+/* keep clear of the game screen's sound button (top-right) */
+body.screen-game .a11y-btn{top:72px;}
+body.screen-game .a11y-menu{top:118px;}
 .a11y-menu.open{display:block;}
 .a11y-menu h3{margin:0 0 8px;font-size:16px;font-variant:small-caps;letter-spacing:1px;color:var(--bronze-dk);text-align:center;}
 .a11y-menu button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:12px;margin:6px 0;
@@ -1034,7 +1043,8 @@ window.exhibitPlate = exhibitPlate;
   });
   (function(){ let taps=0, tt=0;
     document.addEventListener("pointerdown", e=>{
-      if(e.clientX > window.innerWidth-60 && e.clientY < 60){
+      // top-right corner, but ignore taps on the accessibility control that lives there
+      if(e.clientX > window.innerWidth-60 && e.clientY < 60 && !(e.target.closest && e.target.closest(".a11y-btn,.a11y-menu"))){
         const now=Date.now(); if(now-tt>2500) taps=0; taps++; tt=now;
         if(taps>=5){ taps=0; openStats(); }
       }
