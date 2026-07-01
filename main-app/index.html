@@ -301,9 +301,10 @@ button{font-family:inherit;cursor:pointer;border:none;}
 
 .lightbox{position:absolute;inset:0;z-index:70;display:none;background:rgba(8,22,28,.94);}
 .lightbox.show{display:flex;flex-direction:column;}
-.lb-top{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;}
-.lb-close{background:linear-gradient(180deg,var(--parch),var(--parch2));border-radius:50%;width:54px;height:54px;
-  font-size:26px;color:var(--bronze-dk);border:2.5px solid var(--bronze);box-shadow:0 4px 10px var(--shadow);}
+.lb-top{height:64px;display:flex;align-items:center;justify-content:flex-start;padding:0 16px;}
+.lb-close{display:flex;align-items:center;gap:6px;background:linear-gradient(180deg,var(--parch),var(--parch2));
+  border-radius:30px;height:52px;padding:0 22px;font-size:20px;font-weight:700;letter-spacing:.5px;
+  color:var(--bronze-dk);border:2.5px solid var(--bronze);box-shadow:0 4px 10px var(--shadow);}
 .lb-body{flex:1;display:flex;align-items:center;justify-content:center;padding:0 18px;min-height:0;}
 .lb-body svg,.lb-body img{max-height:70vh;max-width:92vw;border-radius:10px;border:4px solid var(--bronze);
   box-shadow:0 10px 30px rgba(0,0,0,.5);background:#cfe3ef;}
@@ -843,8 +844,7 @@ body.a11y-hc .a11y-menu button{border-color:#000;}
   </div>
   <div class="lightbox" id="lightbox">
     <div class="lb-top">
-      <span style="width:54px"></span>
-      <button class="lb-close" id="lbClose">✕</button>
+      <button class="lb-close" id="lbClose" aria-label="Back to gallery">‹ Back</button>
     </div>
     <div class="lb-body" id="lbBody"></div>
     <button class="lb-nav prev" id="lbPrev">‹</button>

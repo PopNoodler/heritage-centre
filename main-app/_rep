@@ -1,0 +1,9 @@
+<script>window.addEventListener("load",function(){
+document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+document.getElementById("gallery").classList.add("active");
+document.body.className="screen-gallery";
+document.getElementById("lightbox").classList.add("show");
+document.getElementById("lbBody").innerHTML='<svg viewBox="0 0 400 260"><rect width="400" height="260" fill="#9db7c0"/><circle cx="200" cy="130" r="70" fill="#7c9aa6"/></svg>';
+document.getElementById("lbTitle").textContent="Herring Barrel";
+document.getElementById("lbDesc").textContent="Salted herring were packed in oak barrels at the Castlebay curing stations before being shipped south.";
+});</script></body>
