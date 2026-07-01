@@ -38,12 +38,11 @@ for public use before the stations go live.
 - [ ] Heritage places (bronze) and hotels/campsites (blue) are both present.
 
 ### Accessibility (both apps)
-- [ ] The **♿ button** (bottom-left) opens a small menu with **Larger text** and
-      **High contrast**. Each toggles on/off and shows its state.
-- [ ] Choices **persist** after an idle reset and are **shared** between the two
+- [ ] The **♿ button** (top-right) opens a small menu with a **High contrast**
+      toggle that turns on/off and shows its state.
+- [ ] The choice **persists** after an idle reset and is **shared** between the two
       apps on the same tablet (set once, applies to both stations' browser).
-- [ ] High contrast switches the reading surfaces to black-on-white; larger text
-      enlarges the descriptions/facts (game buttons and layout stay put).
+- [ ] High contrast switches the reading surfaces to black-on-white.
 
 ### Attract / screensaver (both apps)
 - [ ] After ~90 s idle the app returns home; ~25 s later a full-screen **attract

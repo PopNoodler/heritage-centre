@@ -441,15 +441,6 @@ body.screen-game .a11y-menu{top:118px;}
 .a11y-menu button[aria-pressed="true"]{background:var(--bronze);color:var(--parch);}
 .a11y-menu button[aria-pressed="true"] .state{color:var(--parch);}
 
-/* larger reading text — bumps the copy people read, not the fixed layout */
-body.a11y-big .menu-card p{font-size:21px;}
-body.a11y-big .menu-card h2{font-size:33px;}
-body.a11y-big .menu-card .gd{font-size:20px;}
-body.a11y-big #buildFactText{font-size:23px;}
-body.a11y-big #lbDesc{font-size:24px;line-height:1.6;}
-body.a11y-big #lbTitle{font-size:32px;}
-body.a11y-big .fact-bubble{font-size:23px;}
-
 /* high contrast — override the shared palette variables */
 body.a11y-hc{--parch:#ffffff;--parch2:#f2f2f2;--ink:#000000;--ink-soft:#161616;
   --bronze:#5c3d0e;--bronze-lt:#7c531a;--bronze-dk:#000000;--parch-edge:#000;--shadow:rgba(0,0,0,.55);}
@@ -899,7 +890,6 @@ body.a11y-hc .a11y-menu button{border-color:#000;}
 <button class="a11y-btn" id="a11yBtn" aria-label="Accessibility options" aria-expanded="false">♿</button>
 <div class="a11y-menu" id="a11yMenu" role="menu" aria-label="Accessibility">
   <h3>Accessibility</h3>
-  <button id="a11yBig" role="menuitemcheckbox" aria-pressed="false">Larger text <span class="state">Off</span></button>
   <button id="a11yHc" role="menuitemcheckbox" aria-pressed="false">High contrast <span class="state">Off</span></button>
 </div>
 
@@ -1118,21 +1108,17 @@ window.exhibitPlate = exhibitPlate;
     if(Sound.on) Sound.blip(700,0.1);
   });
 
-  /* ---------- Accessibility (larger text / high contrast) ---------- */
+  /* ---------- Accessibility (high contrast) ---------- */
   (function(){
     const KEY = "hc_a11y", B = document.body;
-    let pref = { big:false, hc:false };
+    let pref = { hc:false };
     try{ pref = Object.assign(pref, JSON.parse(localStorage.getItem(KEY)) || {}); }catch(_){}
-    const btnBig = document.getElementById("a11yBig");
     const btnHc  = document.getElementById("a11yHc");
     const menu   = document.getElementById("a11yMenu");
     const toggle = document.getElementById("a11yBtn");
     function apply(){
-      B.classList.toggle("a11y-big", !!pref.big);
       B.classList.toggle("a11y-hc",  !!pref.hc);
-      btnBig.setAttribute("aria-pressed", pref.big ? "true":"false");
       btnHc.setAttribute("aria-pressed",  pref.hc  ? "true":"false");
-      btnBig.querySelector(".state").textContent = pref.big ? "On":"Off";
       btnHc.querySelector(".state").textContent  = pref.hc  ? "On":"Off";
       try{ localStorage.setItem(KEY, JSON.stringify(pref)); }catch(_){}
     }
@@ -1140,7 +1126,6 @@ window.exhibitPlate = exhibitPlate;
       const open = menu.classList.toggle("open");
       toggle.setAttribute("aria-expanded", open ? "true":"false");
     });
-    bindTap(btnBig, ()=>{ pref.big = !pref.big; apply(); Stats.bump("a11y_big_" + (pref.big?"on":"off")); });
     bindTap(btnHc,  ()=>{ pref.hc  = !pref.hc;  apply(); Stats.bump("a11y_contrast_" + (pref.hc?"on":"off")); });
     // close the menu when tapping elsewhere
     document.addEventListener("pointerdown", e=>{

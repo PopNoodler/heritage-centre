@@ -205,11 +205,6 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .a11y-menu button[aria-pressed="true"]{background:var(--bronze);color:var(--parch);}
 .a11y-menu button[aria-pressed="true"] .state{color:var(--parch);}
 
-/* larger reading text — the info panel is where the reading happens */
-body.a11y-big #pTitle{font-size:30px;}
-body.a11y-big #pDesc{font-size:21px;line-height:1.6;}
-body.a11y-big #pFact{font-size:20px;}
-
 /* high contrast — override the shared palette variables */
 body.a11y-hc{--parch:#ffffff;--parch2:#f2f2f2;--ink:#000000;--ink-soft:#161616;
   --bronze:#5c3d0e;--bronze-lt:#7c531a;--bronze-dk:#000000;}
@@ -375,7 +370,6 @@ body.a11y-hc .a11y-menu button{border-color:#000;}
 <button class="a11y-btn" id="a11yBtn" aria-label="Accessibility options" aria-expanded="false">♿</button>
 <div class="a11y-menu" id="a11yMenu" role="menu" aria-label="Accessibility">
   <h3>Accessibility</h3>
-  <button id="a11yBig" role="menuitemcheckbox" aria-pressed="false">Larger text <span class="state">Off</span></button>
   <button id="a11yHc" role="menuitemcheckbox" aria-pressed="false">High contrast <span class="state">Off</span></button>
 </div>
 
@@ -438,23 +432,19 @@ document.getElementById("statsCopy").onclick = ()=>{
 })();
 
 /* ============================================================
-   ACCESSIBILITY — larger text / high contrast (shared pref
-   with the main app via the hc_a11y localStorage key).
+   ACCESSIBILITY — high contrast (shared pref with the main app
+   via the hc_a11y localStorage key).
    ============================================================ */
 (function(){
   const KEY = "hc_a11y", B = document.body;
-  let pref = { big:false, hc:false };
+  let pref = { hc:false };
   try{ pref = Object.assign(pref, JSON.parse(localStorage.getItem(KEY)) || {}); }catch(_){}
-  const btnBig = document.getElementById("a11yBig");
   const btnHc  = document.getElementById("a11yHc");
   const menu   = document.getElementById("a11yMenu");
   const toggle = document.getElementById("a11yBtn");
   function apply(){
-    B.classList.toggle("a11y-big", !!pref.big);
     B.classList.toggle("a11y-hc",  !!pref.hc);
-    btnBig.setAttribute("aria-pressed", pref.big ? "true":"false");
     btnHc.setAttribute("aria-pressed",  pref.hc  ? "true":"false");
-    btnBig.querySelector(".state").textContent = pref.big ? "On":"Off";
     btnHc.querySelector(".state").textContent  = pref.hc  ? "On":"Off";
     try{ localStorage.setItem(KEY, JSON.stringify(pref)); }catch(_){}
   }
@@ -462,7 +452,6 @@ document.getElementById("statsCopy").onclick = ()=>{
     const open = menu.classList.toggle("open");
     toggle.setAttribute("aria-expanded", open ? "true":"false");
   });
-  btnBig.addEventListener("click", ()=>{ pref.big = !pref.big; apply(); Stats.bump("a11y_big_" + (pref.big?"on":"off")); });
   btnHc.addEventListener("click",  ()=>{ pref.hc  = !pref.hc;  apply(); Stats.bump("a11y_contrast_" + (pref.hc?"on":"off")); });
   document.addEventListener("pointerdown", e=>{
     if(menu.classList.contains("open") && !menu.contains(e.target) && e.target !== toggle){
